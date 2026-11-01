@@ -27,7 +27,7 @@ O snapshot histórico de 2015 permanece separado dos lotes correntes de Câmara 
 
 ## Interface e dependências
 
-Radix Dialog fornece comportamento de foco e fechamento dos diálogos e do menu móvel; Lucide fornece ícones; Open Props fornece tokens CSS de easing. O CSS da aplicação define hierarquia, layout, contraste, responsividade e movimento reduzido. Bibliotecas de runtime adicionais precisam resolver uma necessidade concreta sem duplicar esses comportamentos.
+Radix Dialog fornece comportamento de foco e fechamento dos diálogos e do menu móvel; Lucide fornece ícones; Open Props fornece tokens CSS de easing. O menu usa superfícies e animações CSS próprias (sheet inferior no celular, painel lateral em telas maiores) e a busca mantém os filtros visíveis, sem instalar outra biblioteca de componentes. Fotos usam primeiro o proxy validado da aplicação; se a requisição falhar, o navegador tenta a URL exata publicada pela Câmara, sem Referer. Nesse caso, o domínio oficial recebe o IP do navegador. Se não houver conexão com nenhum dos caminhos, a tela mantém o placeholder. Bibliotecas de runtime adicionais precisam resolver uma necessidade concreta sem duplicar esses comportamentos.
 
 Prettier é apenas ferramenta de desenvolvimento. `.editorconfig`, `.prettierrc.json` e `.prettierignore` mantêm a organização legível e deixam snapshots e arquivos compartilhados de preview intactos. TypeScript, testes e revisão cobrem responsabilidades diferentes da formatação.
 

@@ -1,6 +1,6 @@
 # Decisão vigente de interface — 31/10/2026
 
-A pesquisa aprofundada e a implementação desta rodada estão em [design-research.md](audit/design-research.md). A interface vigente usa superfícies claras para leitura, marca marinho/dourado, fontes de sistema e CSS por responsabilidade. Radix/Lucide/Open Props foram mantidos, sem nova dependência de runtime. O registro abaixo preserva as pesquisas e decisões anteriores como histórico.
+A pesquisa aprofundada e as duas rodadas de implementação estão em [design-research.md](audit/design-research.md). A interface vigente usa superfícies claras para leitura, marca marinho/dourado, fontes de sistema e CSS por responsabilidade. O topo usa um painel flutuante translúcido; no celular, o menu é um sheet inferior com suporte à área segura. A busca tem painel branco arredondado, filtros agrupados e estados de foco no conjunto. Radix/Lucide/Open Props foram mantidos, sem nova dependência de runtime. O registro abaixo preserva as pesquisas e decisões anteriores como histórico.
 
 # Pesquisa de componentes de interface
 
@@ -47,6 +47,6 @@ A API `api.github.com` retornou 403 pelo proxy nesta máquina; não foi possíve
 
 ## Redesign visual atual
 
-A tela principal e as páginas internas usam o CSS próprio já existente, com tokens marinho/dourado e a marca PLENÁRIO. O drawer de navegação para telas menores usa Radix Dialog (MIT), que já fazia parte do projeto, para foco contido, fechamento por Escape e retorno de foco; os ícones continuam em Lucide React (ISC). Open Props 1.7.23 (MIT) fornece apenas os tokens CSS de easing usados na entrada do menu; não adiciona JavaScript à navegação. Os estilos do drawer permanecem pequenos e específicos da identidade do produto.
+A tela principal e as páginas internas usam o CSS próprio já existente, com tokens marinho/dourado e a marca PLENÁRIO. O drawer de navegação usa Radix Dialog (MIT), que já fazia parte do projeto, para foco contido, fechamento por Escape e retorno de foco; os ícones continuam em Lucide React (ISC). Em telas pequenas, o painel abre pela parte inferior, respeita a área segura e rola quando o conteúdo ultrapassa a altura; em telas maiores, aparece como painel lateral. Open Props 1.7.23 (MIT) fornece apenas os tokens CSS de easing; a transição não requer JavaScript de animação. Os estilos permanecem específicos da identidade do produto.
 
 A navegação mantém links para as rotas existentes, recebe suporte por teclado e toque e respeita movimento reduzido do sistema e a opção do próprio site. O CSS do produto continua sendo a fonte de estilos para evitar dois sistemas visuais competindo. Os atalhos de cargo são derivados dos cargos presentes no lote de dados, sem categorias sem fonte. O hero usa um SVG arquitetônico original, criado no projeto; não substitui fotografia licenciada nem depende de serviço externo. Capturas renderizadas: `docs/preview/assets/`.

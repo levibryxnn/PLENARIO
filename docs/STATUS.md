@@ -31,7 +31,7 @@ Pedidos de correção são privados. A administração fica desativada sem senha
 
 ## Auditoria e revisão visual concluídas
 
-A revisão de código, dados, segurança, UX e dependências foi integrada. A interface agora usa fundo claro de leitura, texto escuro e a marca marinho/dourado; preserva retratos e fontes, com fallback confiável. CSS foi consolidado em seis arquivos por responsabilidade e uma entrada global. Comparação persiste na sessão e no retorno de um perfil; paginação mantém resumo coerente; menu cabe em paisagem; armazenamento negado não impede o uso. Trajetórias são exibidas em ordem de data sem alterar a fonte armazenada.
+A revisão de código, dados, segurança, UX e dependências foi integrada. Nesta continuação, o hero ficou mais compacto, o cabeçalho recebeu superfície translúcida e navegação em cápsula, o menu móvel virou uma gaveta inferior com suporte à área segura, e o painel de busca ganhou filtros agrupados e bordas mais arredondadas. Sem nova dependência de runtime. O componente de retrato agora usa como segunda tentativa a URL oficial exata da Câmara, sem Referer, se o proxy falhar.
 
 Foram corrigidos limites de streaming, rejeição de SVG no proxy, revisão obrigatória de conteúdo jurídico importado, portas/IDs oficiais, permissões de banco e unicidade de IDs entre Câmara e Senado. A migração foi testada em um banco legado temporário; nenhum banco externo de produção foi migrado.
 
@@ -43,21 +43,21 @@ Formatação consistente, tipos com checagem de símbolos não usados, Node 24 e
 
 SQLite reduz pré-requisitos do MVP e exige volume persistente. PostgreSQL/worker entram quando houver demanda real. Componentes acessíveis já instalados devem ser reutilizados antes de adicionar bibliotecas redundantes. Snapshots, fotos, galerias e arquivos de download compartilhados não são reformatados nem removidos para evitar perda de proveniência e URLs quebradas.
 
-Retratos são obtidos do URL oficial vinculado ao ID parlamentar, com validação e alternativa por iniciais; direitos de uso e crédito requerem revisão antes de distribuição ampla. Fontes jurídicas exigem revisão humana individualizada. A plataforma não recomenda votos, não produz notas morais e não preenche lacunas por IA.
+Retratos usam o proxy validado e podem ser requisitados diretamente ao domínio oficial da Câmara como alternativa, sem Referer; essa alternativa transmite o IP do navegador ao órgão. Se a rede bloquear ambos os caminhos, a tela mostra iniciais. Direitos de uso e crédito requerem revisão antes de distribuição ampla. Fontes jurídicas exigem revisão humana individualizada. A plataforma não recomenda votos, não produz notas morais e não preenche lacunas por IA.
 
 ## Testes e evidência
 
 - `npm run format:check`, `npm run typecheck` e `git diff --check`: aprovados.
 - `npm test`: **41 testes aprovados**, nenhum ignorado; inclui migração preservando correções/índices, streaming, SVG, IDs, sessões e barreiras editoriais.
 - `npm run build`: aprovado sem advertência de tracing após explicitar que o caminho do banco é runtime.
-- `npm run test:e2e`: **12 testes aprovados**, nenhum ignorado; filtros, seleção, paginação, perfil, comparação persistente, fontes/foco, correções privadas, autenticação, guia de cargos, fallback de foto, storage negado e menu em paisagem.
+- `npm run test:e2e`: **13 testes aprovados**, nenhum ignorado; inclui a alternativa de foto com URL oficial mockada no teste, menu inferior, filtros, seleção, paginação, comparação persistente, fontes/foco, correções privadas, autenticação e storage negado.
 - Axe: zero violações A/AA nas telas testadas (início, perfil, cargos, metodologia, correções, comparação, login e menu); não é certificação.
 - Layout Chromium: sem overflow de raiz em 320, 390, 768 e 1280 px. Controles de paginação e troca de perfil passaram de 25/24 para 44 px. Nomes nos cards passaram de 12 para 16 px e cargos de 9 para 12 px.
-- CSS emitido: 70.568 → 44.504 bytes; gzip calculado localmente 15.351 → 10.336 bytes (**32,7% menor**). Medição não representa uma CDN.
-- Medição local de carregamento: 9 solicitações JS / 163.432 bytes de transferência. TTFB 153 ms, DOMContentLoaded 403 ms, load 404 ms nesta execução, sem throttling; não é Lighthouse nem promessa de desempenho real.
+- CSS emitido: 70.568 → 46.461 bytes; gzip calculado localmente 15.351 → 10.779 bytes (**29,8% menor**). Medição não representa uma CDN.
+- Medição local de carregamento: 9 solicitações JS / 163.573 bytes de transferência. TTFB 139 ms, DOMContentLoaded 314 ms, load 373 ms nesta execução, sem throttling; não é Lighthouse nem promessa de desempenho real.
 - `npm audit`: zero vulnerabilidades conhecidas reportadas. CI foi adicionada, mas sua execução remota não foi verificada.
 
-Fotos oficiais não puderam ser recuperadas nesta rede: `www.camara.leg.br` retornou bloqueio de proxy CONNECT 403. Capturas mostram o fallback real, sem fotos substituídas. Testes de sucesso/falha das imagens usam um raster sintético identificado; não validam a disponibilidade atual do órgão.
+Fotos oficiais não puderam ser recuperadas nesta rede: `www.camara.leg.br` retornou bloqueio de proxy CONNECT 403. A captura continua mostrando o fallback; teste de navegador simula a rota direta com raster sintético, sem validar a disponibilidade real do órgão.
 
 Evidências: `docs/audit/browser-metrics.json`, `docs/audit/css-metrics.json`, capturas atuais em `docs/preview/assets/` e relatórios locais ignorados em `test-results/`/`playwright-report/`. Arquivos antigos de download foram preservados.
 

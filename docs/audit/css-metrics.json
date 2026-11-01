@@ -6,9 +6,10 @@
   },
   "after": {
     "files": 1,
-    "rawBytes": 44504,
-    "gzipBytes": 10336
+    "rawBytes": 46461,
+    "gzipBytes": 10779
   },
-  "reductionPercent": 32.7,
-  "scope": "CSS emitido pela build; gzip calculado localmente. Não representa medição em CDN."
+  "reductionPercent": 29.8,
+  "rawReductionPercent": 34.2,
+  "scope": "CSS emitido pela build de produção; gzip calculado localmente. Não representa medição em CDN."
 }

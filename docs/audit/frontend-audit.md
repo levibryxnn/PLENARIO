@@ -43,8 +43,14 @@ Referência inicial: commit `541b1c0`. Escopo: páginas públicas, seleção, pe
 4. Rótulos jurídicos compartilhados em conteúdo estático, mantendo as dez situações distintas.
 5. Retorno do comparador ao explorador com os identificadores já escolhidos.
 
+## Anotações de design, 31/10/2026
+
+O preview marcado mostrava o hero com espaço vertical excedente, o menu móvel como painel lateral tradicional, a busca com borda quadrada e as fotos usando apenas o proxy da aplicação. O topo e os intervalos entre hero, cobertura e busca foram compactados; a barra superior agora é flutuante e translúcida, com indicador ativo em cápsula. O menu celular abre como gaveta inferior, usa área segura e rola quando o conteúdo ultrapassa a tela. A busca recebeu cantos amplos, superfície elevada, filtros agrupados e foco no painel inteiro. A captura revisada deve ser comparada com a original antes de declarar a redução do espaço como validada.
+
+Para as fotos, o componente tenta primeiro o proxy seguro; após uma falha, pode abrir apenas o caminho de retrato exato que corresponde ao ID oficial da Câmara, usando `referrerPolicy=no-referrer`. O servidor deste ambiente bloqueia os dois caminhos de rede com CONNECT 403, então os retratos reais não puderam ser confirmados em captura. As regressões de navegador cobrem o fallback direto usando imagem raster sintética explicitamente limitada ao teste.
+
 As alterações visuais, restauração da seleção e verificação final de layout são acompanhadas pela implementação principal. As medições acima descrevem a referência inicial, não afirmam o resultado da build final.
 
 ## Resultado integrado
 
-Os fluxos acima foram corrigidos e verificados na suíte final de 12 testes de navegador: persistência e retorno à comparação, paginação coerente, storage negado, foto com falha antes da hidratação e troca posterior, menu em paisagem e páginas secundárias. A grade não apresentou overflow nas larguras 320/390/768/1280. Alvos de paginação/troca de perfil medidos em 44 px; nomes 16 px e cargos 12 px. Ver métricas e limitações no relatório integrado.
+Os fluxos acima foram corrigidos e verificados na suíte final de 13 testes de navegador: persistência e retorno à comparação, paginação coerente, storage negado, foto com falha antes da hidratação e troca posterior, tentativa pela URL oficial e menu em paisagem. A grade não apresentou overflow nas larguras 320/390/768/1280. Alvos de paginação/troca de perfil medidos em 44 px; nomes 16 px e cargos 12 px. Ver métricas e limitações no relatório integrado.

@@ -23,5 +23,17 @@
     "paginationHeight": 44,
     "adjacentHeight": 44
   },
-  "upstreamPhotos": "Official Câmara host rejected by environment egress proxy (CONNECT 403); screenshots use real fallback, no substituted photos."
+  "upstreamPhotos": "www.camara.leg.br bloqueado pelo proxy de saída (HTTP CONNECT 403); browser fallback testado com imagem raster sintética, fonte real não verificada.",
+  "load": {
+    "viewport": {
+      "width": 1280,
+      "height": 720
+    },
+    "ttfbMs": 139,
+    "domContentLoadedMs": 314,
+    "loadMs": 373,
+    "jsRequests": 9,
+    "jsTransferBytes": 163573,
+    "note": "Medição local Chromium em produção, sem limitação de rede/CPU; não é Lighthouse nem previsão de desempenho de usuário real."
+  }
 }

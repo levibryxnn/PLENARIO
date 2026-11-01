@@ -21,14 +21,25 @@ export function Portrait({
   large?: boolean;
 }) {
   const [failedPhoto, setFailedPhoto] = useState<string | null>(null);
+  const [directFallback, setDirectFallback] = useState<string | null>(null);
   const imageRef = useRef<HTMLImageElement>(null);
   const photoKey = `${politician.id}|${politician.photoUrl ?? ''}`;
+  const officialDirectPhoto =
+    politician.id === `camara:${politician.officialId}` &&
+    politician.photoUrl ===
+      `https://www.camara.leg.br/internet/deputado/bandep/${politician.officialId}.jpg`
+      ? politician.photoUrl
+      : null;
+  const useDirectFallback = directFallback === photoKey && Boolean(officialDirectPhoto);
   const showPhoto = Boolean(politician.photoUrl) && failedPhoto !== photoKey;
   useEffect(() => {
     // An eager server-rendered image can fail before React attaches onError.
     const image = imageRef.current;
-    if (showPhoto && image?.complete && image.naturalWidth === 0) setFailedPhoto(photoKey);
-  }, [photoKey, showPhoto]);
+    if (showPhoto && image?.complete && image.naturalWidth === 0) {
+      if (officialDirectPhoto && !useDirectFallback) setDirectFallback(photoKey);
+      else setFailedPhoto(photoKey);
+    }
+  }, [officialDirectPhoto, photoKey, showPhoto, useDirectFallback]);
 
   return (
     <div
@@ -38,16 +49,24 @@ export function Portrait({
     >
       {showPhoto ? (
         <img
-          key={photoKey}
+          key={`${photoKey}|${useDirectFallback ? 'direct' : 'proxy'}`}
           ref={imageRef}
           className="portrait-image"
-          src={`/api/photos/${encodeURIComponent(politician.id)}`}
+          src={
+            useDirectFallback
+              ? officialDirectPhoto!
+              : `/api/photos/${encodeURIComponent(politician.id)}`
+          }
           alt={`Foto oficial de ${politician.name}`}
           width={300}
           height={360}
           loading={large ? 'eager' : 'lazy'}
           decoding="async"
-          onError={() => setFailedPhoto(photoKey)}
+          referrerPolicy={useDirectFallback ? 'no-referrer' : undefined}
+          onError={() => {
+            if (officialDirectPhoto && !useDirectFallback) setDirectFallback(photoKey);
+            else setFailedPhoto(photoKey);
+          }}
         />
       ) : (
         <>

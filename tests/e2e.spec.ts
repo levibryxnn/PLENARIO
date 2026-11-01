@@ -85,8 +85,12 @@ test('menu lateral mobile abre com animação, fecha e navega por teclado e toqu
   const dialog = page.getByRole('dialog', { name: 'Navegação PLENÁRIO' });
   await expect(dialog).toBeVisible();
   await expect(dialog.getByRole('link', { name: 'Comparador' })).toBeVisible();
+  await dialog.evaluate((element) =>
+    Promise.all(element.getAnimations().map((animation) => animation.finished)),
+  );
+  await page.screenshot({ path: 'test-results/menu-mobile.png' });
   expect(await dialog.evaluate((element) => getComputedStyle(element).animationName)).toContain(
-    'menu-sheet-in',
+    'menu-sheet-up-in',
   );
   expect(
     await page
@@ -413,6 +417,7 @@ test('armazenamento negado não quebra navegação; menu cabe em paisagem e layo
 test('falha de um retrato não bloqueia a foto do próximo perfil', async ({ page }) => {
   const [first, second] = politicians.filter((p) => p.photoUrl);
   expect(second).toBeTruthy();
+  await page.route('https://www.camara.leg.br/**', (route) => route.fulfill({ status: 404 }));
   await page.route('**/api/photos/**', (route) =>
     decodeURIComponent(new URL(route.request().url()).pathname).endsWith(first.id)
       ? route.fulfill({ status: 404 })
@@ -431,6 +436,35 @@ test('falha de um retrato não bloqueia a foto do próximo perfil', async ({ pag
   await expect
     .poll(() => photo.evaluate((img: HTMLImageElement) => img.naturalWidth))
     .toBeGreaterThan(0);
+});
+
+test('foto oficial tenta o endereço público da Câmara quando o proxy da aplicação falha', async ({
+  page,
+}) => {
+  const politician = politicians.find((p) => p.photoUrl);
+  expect(politician).toBeTruthy();
+  const source = politician!.photoUrl!;
+  const requests: string[] = [];
+  await page.route('**/api/photos/**', (route) => route.fulfill({ status: 502 }));
+  await page.route('https://www.camara.leg.br/**', async (route) => {
+    if (route.request().url() === source) {
+      requests.push(route.request().url());
+      await route.fulfill({ status: 200, contentType: 'image/png', body: imageFixture });
+      return;
+    }
+    await route.fulfill({ status: 404 });
+  });
+  await page.goto('/');
+  await page.getByRole('textbox', { name: 'Buscar político por nome' }).fill(politician!.name);
+  const photo = page
+    .getByRole('complementary', { name: 'Perfil selecionado' })
+    .locator('.portrait-image');
+  await expect(photo).toHaveAttribute('src', source);
+  await expect(photo).toHaveAttribute('referrerpolicy', 'no-referrer');
+  await expect
+    .poll(() => photo.evaluate((img: HTMLImageElement) => img.naturalWidth))
+    .toBeGreaterThan(0);
+  expect(requests).toEqual([source]);
 });
 
 test('páginas secundárias mantêm leitura, acessibilidade e rolagem da tabela em telas pequenas', async ({
