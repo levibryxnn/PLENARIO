@@ -1,0 +1,14 @@
+{
+  "before": {
+    "files": 1,
+    "rawBytes": 70568,
+    "gzipBytes": 15351
+  },
+  "after": {
+    "files": 1,
+    "rawBytes": 44504,
+    "gzipBytes": 10336
+  },
+  "reductionPercent": 32.7,
+  "scope": "CSS emitido pela build; gzip calculado localmente. Não representa medição em CDN."
+}

@@ -1,74 +1,64 @@
-# PLENÁRIO — índice público da política brasileira
+# PLENÁRIO
 
-Aplicação web funcional de transparência política. Interface de seleção, pesquisa, filtros, perfis com proveniência e comparação, apoiados por importações oficiais da Câmara e do Senado e SQLite persistente. Sem notas de honestidade, recomendação de voto ou acusações geradas.
+Uma plataforma brasileira de informação política com registros oficiais, fontes junto das afirmações e comparação factual. Não recomenda votos, não atribui notas de honestidade e não publica acusações automaticamente.
 
-Esta branch contém o núcleo funcional do PLENÁRIO. A versão anterior baseada no template Lovable foi preservada na branch [`lovable-preview-legacy`](https://github.com/levibryxnn/screenshot-exact-match/tree/lovable-preview-legacy); a migração foi feita em commits normais, sem reescrever o histórico.
+O núcleo atual permite pesquisar parlamentares federais, consultar perfis e proposições, comparar até quatro pessoas e entender as atribuições dos cargos públicos. A cobertura ainda não inclui toda a política brasileira.
 
-## Executar
+## Começar
 
-Nome público do produto: **PLENÁRIO**. O prefixo de configuração `CIVIS_*` e o caminho `var/civis.db` são mantidos para compatibilidade com ambientes e dados já existentes.
-
-
-Requer **Node 24**, npm e disco local persistente. Use o checkout existente; tarefas na nuvem já são isoladas, não crie worktree adicional.
+Requisitos: **Node.js 24**, npm e disco local. A versão do Node está em [`.nvmrc`](.nvmrc); as dependências estão fixadas pelo lockfile.
 
 ```bash
-cd /workspace/screenshot-exact-match
-npm ci --cache /tmp/civis-npm-cache
+cd screenshot-exact-match
+npm ci --cache /tmp/civis-npm-cache --no-fund
 npm run db:init
 npm run dev
 ```
 
-O banco é criado em `var/civis.db` e carrega o snapshot oficial sanitizado quando estiver vazio. Não é necessário segredo para navegar. Desenvolvimento usa porta 3000. Para execução de produção:
+O banco é criado em `var/civis.db` e recebe os snapshots oficiais quando estiver vazio. Nenhum segredo é necessário para a navegação pública. A porta padrão é 3000.
+
+Para executar a build de produção:
 
 ```bash
 npm run build
 npm run start
 ```
 
-Dados retidos em disco sobrevivem a reinícios; processos precisam ser iniciados novamente. Não hospede o banco SQLite em filesystem efêmero. Não há deploy ou serviço pago contratado.
+Um servidor iniciado no ambiente não cria uma URL pública. O repositório não contém uma hospedagem publicada ou um serviço pago contratado. A versão anterior do template Lovable permanece em [`lovable-preview-legacy`](https://github.com/levibryxnn/screenshot-exact-match/tree/lovable-preview-legacy), sem reescrita de histórico.
 
-## O que está implementado
+## Funcionalidades
 
-- Seleção de perfis com tema editorial marinho e dourado, hero com ilustração arquitetônica original, busca tolerante a acentos, filtros reais por cargo/partido/UF/situação e paginação.
-- Menu lateral responsivo com foco acessível, fechamento por Escape, animação reduzível e navegação por toque; utiliza Radix Dialog e tokens CSS do Open Props (MIT).
-- Perfis navegáveis, histórico parlamentar, até cinco proposições por deputado e citações junto dos registros.
-- Comparação factual de até quatro pessoas, com contexto e lacunas visíveis.
-- Importador real com domínio restrito, timeout, repetição controlada, validação e persistência transacional.
-- Versões dos dados, histórico de importações e cache preservado em caso de falha.
-- Pedidos de correção persistidos e privados; área editorial autenticada, rascunhos, aprovação/rejeição de registros jurídicos e auditoria.
-- Alertas de dados antigos, conteúdo indisponível e falha de atualização; teclado, movimento reduzido e layout móvel. Cabeçalho e navegação receberam revisão visual sem alterar rotas ou estado de dados.
+- Busca tolerante a acentos, filtros por cargo, partido, UF e situação, seleção por retrato e paginação.
+- Perfis com identificação oficial, trajetória documentada, proposições e fontes por registro.
+- Comparação de até quatro pessoas, sem pontuação geral ou equivalência entre métricas incompatíveis.
+- Guia dos cargos públicos em linguagem simples, da esfera municipal à federal.
+- Navegação por teclado, menu móvel acessível e preferência de movimento reduzido.
+- Importação com validação, repetição controlada, versões e preservação do cache em falhas.
+- Pedidos privados de correção e fluxo editorial autenticado para revisão humana de registros sensíveis.
 
-Snapshots oficiais: **513 deputados** e **81 senadores em exercício**. A Câmara inclui até cinco proposições recentes por deputado; os 81 senadores vêm da lista corrente do Senado. Esses números descrevem os lotes importados, não a totalidade de suas atividades. [Proveniência e limitações](docs/SNAPSHOT.md). Capturas atuais em [docs/preview](docs/preview/index.html).
+Os snapshots distribuídos contêm **513 deputados e 81 senadores**, coletados em 27/10/2026. A Câmara inclui até cinco proposições por deputado. Esses números descrevem a cobertura importada; não comprovam atualização contínua nem a totalidade da atividade parlamentar. [Datas, origem e limitações dos snapshots](docs/SNAPSHOT.md).
 
-## Atualizar dados
+## Organização
 
-```bash
-npm run data:import -- --source=all
-# Opcional: atualizar os snapshots versionáveis, sem contatos ou dados sensíveis
-npm run data:import -- --source=all --snapshot
-```
+| Caminho           | Responsabilidade                                                        |
+| ----------------- | ----------------------------------------------------------------------- |
+| `src/app/`        | Rotas públicas, metadados e APIs do Next.js                             |
+| `src/components/` | Interface e interações reutilizáveis                                    |
+| `src/lib/`        | Contratos, validação, dados, conectores, segurança e política editorial |
+| `scripts/`        | Inicialização e importação de dados                                     |
+| `data/`           | Snapshots oficiais sanitizados, com proveniência                        |
+| `tests/`          | Dados, regras editoriais, segurança e navegação                         |
+| `docs/`           | Arquitetura, metodologia, pesquisa, auditoria e evidências              |
+| `public/`         | Identidade visual e arquivos públicos                                   |
+| `var/`            | Banco e chave locais; ignorados pelo Git                                |
 
-Somente a opção explícita `--snapshot` modifica o arquivo de dados distribuído. Importação administrativa altera apenas o banco. Um lote bem-sucedido substitui a seleção ativa, preservando perfis anteriores, versões e vínculos. Falha retorna código diferente de zero e não substitui o lote.
+A aplicação usa Next.js App Router, React, TypeScript, Node 24, SQLite, Zod, Radix Dialog, Lucide e CSS. Não exige PostgreSQL ou uma conta paga para desenvolvimento. [Arquitetura e limites operacionais](docs/ARCHITECTURE.md).
 
-A estrutura permite execução periódica externa. Exemplo de cron no host de implantação (não instalado automaticamente):
-
-```cron
-0 */6 * * * cd /caminho/screenshot-exact-match && /caminho/npm run data:import -- --source=all >> var/import.log 2>&1
-```
-
-Monitore `import_runs`/painel. Evite execução concorrente; a cobertura atual é federal e ainda não inclui assembleias estaduais ou câmaras municipais. Destinos: `registry.npmjs.org`, `dadosabertos.camara.leg.br` e `legis.senado.leg.br`; GitHub para fontes históricas/pesquisa. As consultas correntes não exigem chave na versão atual.
-
-## Administração
-
-Sem `CIVIS_ADMIN_PASSWORD` (mínimo 16 caracteres), a administração fica desativada. Defina uma senha própria em variável de ambiente segura, junto de `CIVIS_ADMIN_NAME` para identificar o responsável. Nunca use senha de exemplo nem a inclua no repositório. Em desenvolvimento, Node pode ler arquivo `.env.local` ignorado pelo Git; o importador CLI usa as variáveis exportadas pelo processo.
-
-Sessão HttpOnly/SameSite Strict, cookie Secure em produção, HMAC e invalidação ao alterar senha. Chave local em `var/session.key` (0600), ou `CIVIS_SESSION_KEY` com pelo menos 32 caracteres fornecida pela infraestrutura. Por trás de proxy reverso, configure `CIVIS_PUBLIC_ORIGIN` com a origem HTTPS pública exata e preserve host/origem. Faça backup do banco e mantenha a chave fora de arquivos públicos. O MVP usa uma identidade administrativa por instalação: múltiplos usuários, MFA e separação entre revisor e aprovador são próximos incrementos.
-
-Veja [contrato editorial](docs/EDITORIAL.md). Registros de processos não são importados automaticamente; nenhum processo foi incluído como conteúdo de demonstração. Validadores não substituem consulta ao documento ou revisão jurídica.
-
-## Verificar
+## Qualidade e colaboração
 
 ```bash
+npm run format          # aplica a formatação padrão ao código e à documentação
+npm run format:check    # verifica sem modificar arquivos
 npm run typecheck
 npm test
 npm run build
@@ -76,22 +66,65 @@ npm run test:e2e
 npm audit --cache /tmp/civis-npm-cache
 ```
 
-E2E inicia seu próprio servidor de produção na porta 3100, banco temporário e senha aleatória, sem alterar a base de desenvolvimento. Usa `/usr/bin/chromium` quando disponível; em outro ambiente instale o navegador oficial do Playwright com `npx playwright install --with-deps chromium`. Fixtures fictícias estão identificadas e isoladas nos testes. Testes de integração simulados exercitam falhas; a importação real é uma verificação separada, documentada em [estado do projeto](docs/STATUS.md).
+Prettier padroniza a leitura do código; não substitui revisão, TypeScript ou testes. Snapshots, imagens, arquivos de download e galerias históricas ficam fora da formatação. A CI em [`.github/workflows/quality.yml`](.github/workflows/quality.yml) executa esses controles com Node 24 e preserva evidências do navegador. Adicionar o workflow não comprova que uma execução remota já ocorreu.
 
-## Limites desta versão
+Os testes de navegador iniciam um servidor de produção na porta 3100, com banco temporário e senha aleatória. Não alteram a base de desenvolvimento. Usam Chromium do sistema quando disponível; em outro ambiente:
 
-TSE, DataJud, TCU e Portal da Transparência foram pesquisados, mas ainda não estão integrados. O Senado já fornece a lista corrente de parlamentares; proposições e votações ainda serão adicionadas. O TSE será usado para histórico eleitoral, candidaturas, resultados, bens e contas, sem substituir a fonte legislativa do mandato atual. Votos nominais, despesas, patrimônio, promessas, histórico eleitoral completo, municípios, assembleias estaduais e câmaras municipais continuam pendentes. Retratos oficiais da Câmara são carregados por URL quando disponíveis, com fallback e sem cópia local. Município não é inferido de UF. Ausência de registro não significa ausência de atuação ou processos.
+```bash
+npx playwright install --with-deps chromium
+```
 
-A fila de correções recebe pedidos e os mostra ao editor; triagem com prazos, notificação ao solicitante e edição granular de fatos cadastrais ainda não existem. O fluxo sensível permite criar, aprovar e retirar registros com justificativa. Não há pesquisa jurídica exaustiva nem equipe jurídica contratada. Antes de lançamento público amplo: revisão jurídica/LGPD proporcional, backups, observabilidade, origem HTTPS, limitação de tráfego no proxy e gestão de múltiplos editores.
+Leia [`AGENTS.md`](AGENTS.md) antes de modificar a aplicação e a documentação incluída na versão instalada do Next.js. [Estado atual e testes executados](docs/STATUS.md).
 
-Rate limiting local atende uma instância e não substitui limite no proxy/Redis em múltiplas instâncias. CSP permite scripts inline necessários ao Next (nonce estrito é melhoria futura); `unsafe-eval` só em desenvolvimento. SQLite não é arquitetura de alta concorrência. [Arquitetura](docs/ARCHITECTURE.md).
+## Testes manuais isolados
 
-## Pesquisa e continuidade
+Use uma base diferente da base de desenvolvimento. Em Linux, para testar apenas a interface pública com a administração desativada:
 
-- [Projetos e licenças](docs/research-projects.md)
-- [Componentes visuais](docs/research-ui.md)
-- [Fontes oficiais testadas](docs/research-sources.md)
-- [Análise do HTML do Gemini](docs/GEMINI-REVIEW.md)
-- [Estado, testes e próximo incremento](docs/STATUS.md)
+```bash
+mkdir -m 700 -p /tmp/plenario-manual-test
+CIVIS_DB_PATH=/tmp/plenario-manual-test/civis.db npm run db:init
+npm run build
+env -u CIVIS_ADMIN_PASSWORD -u CIVIS_SESSION_KEY -u CIVIS_PUBLIC_ORIGIN \
+  CIVIS_DB_PATH=/tmp/plenario-manual-test/civis.db npm run start
+```
 
-Nenhum código de CandData ou dos projetos de transparência pesquisados foi copiado. Dependências mantêm suas próprias licenças: Next/React/Radix/Zod/Open Props MIT, Lucide ISC e alguns ícones herdados MIT; ferramentas de teste possuem licenças próprias. A licença de dados/fotografias deve ser verificada separadamente da licença de software.
+Essa base começa com registros públicos e não recebe pedidos anteriores de correção. Submissões feitas durante a sessão permanecem nessa base temporária. Não aponte um preview para armazenamento de produção. Para compartilhar a sessão, use uma hospedagem ou proxy HTTPS com controle de acesso; não exponha diretamente o servidor de desenvolvimento.
+
+## Dados e atualização
+
+```bash
+npm run data:import -- --source=all
+# Atualizar também os snapshots versionados é uma decisão explícita:
+npm run data:import -- --source=all --snapshot
+```
+
+A opção `--snapshot` modifica os arquivos distribuídos. Um lote bem-sucedido substitui a seleção ativa da respectiva Casa, preservando versões e perfis anteriores. Falhas preservam o lote anterior e retornam erro. Não execute importações concorrentes. Agendamento e monitoramento ainda dependem da infraestrutura de implantação.
+
+Câmara e Senado estão integrados. TSE, DataJud, TCU e Portal da Transparência foram pesquisados e continuam pendentes. Não se usa o TSE como prova automática de exercício atual. Ainda faltam votos nominais, despesas, patrimônio, promessas, histórico eleitoral completo, assembleias estaduais e câmaras municipais. Município não é inferido da UF. Ausência de registro nunca significa ausência de atuação ou processos.
+
+## Administração e implantação
+
+Sem `CIVIS_ADMIN_PASSWORD` com pelo menos 16 caracteres, a administração fica desativada. Use uma senha exclusiva e defina `CIVIS_ADMIN_NAME` para identificar o responsável. Segredos devem ficar no ambiente, nunca no repositório. [Variáveis disponíveis](.env.example).
+
+Sessões usam assinatura, cookie HttpOnly/SameSite Strict, Secure em produção e invalidação ao trocar a senha. A chave local fica em `var/session.key` (0600), ou pode ser fornecida por `CIVIS_SESSION_KEY`. Atrás de proxy, configure `CIVIS_PUBLIC_ORIGIN` com a origem HTTPS exata. Faça backup do banco e da chave separadamente.
+
+SQLite exige um processo Node com **disco persistente**. Não use filesystem efêmero/serverless para o banco de produção. A limitação de tráfego em memória serve uma instância; múltiplas instâncias precisam de proteção compartilhada no proxy ou armazenamento próprio. O MVP tem uma identidade administrativa: MFA, múltiplos editores e separação entre revisão e aprovação permanecem pendentes.
+
+Registros sensíveis exigem documentação oficial individualizada e revisão humana. Validadores não substituem análise jurídica. Antes de lançamento amplo, ainda são necessários revisão jurídica/LGPD proporcional, observabilidade, recuperação de backups e revisão dos direitos de uso das fotografias. [Contrato editorial](docs/EDITORIAL.md).
+
+## Documentação
+
+- [Estado e próximos incrementos](docs/STATUS.md)
+- [Auditoria de organização e ferramentas](docs/audit/repository-audit.md)
+- [Arquitetura](docs/ARCHITECTURE.md)
+- [Pesquisa de UI e licenças](docs/research-ui.md)
+- [Projetos pesquisados](docs/research-projects.md)
+- [Fontes oficiais](docs/research-sources.md)
+- [Análise do material Gemini](docs/GEMINI-REVIEW.md)
+- [Galeria histórica de capturas](docs/preview/index.html)
+
+Os arquivos de preview existentes são preservados para não quebrar links compartilhados. Bibliotecas mantêm suas próprias licenças; isso não licencia automaticamente os dados, as fotos ou o código da aplicação. Não houve cópia de código de CandData ou dos projetos cívicos pesquisados.
+
+## Auditoria e experiência
+
+A revisão de código e design está documentada no [relatório integrado](docs/audit/README.md), com [pesquisa de bibliotecas e referências](docs/audit/design-research.md), resultados e limites. Para conferir as funções, use o [roteiro de testes manuais](docs/testing/manual-checklist.md). Os estilos têm uma entrada em `src/app/globals.css` e responsabilidades em `src/styles/`; a revisão não adiciona dependências de runtime.

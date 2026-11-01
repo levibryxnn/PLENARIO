@@ -1,0 +1,16 @@
+node_modules/
+.next/
+out/
+var/
+test-results/
+playwright-report/
+coverage/
+data/
+public/
+docs/downloads/
+docs/screenshots/
+docs/preview/
+docs/index.html
+package-lock.json
+next-env.d.ts
+*.tsbuildinfo

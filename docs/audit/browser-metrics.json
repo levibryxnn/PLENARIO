@@ -1,0 +1,27 @@
+{
+  "viewports": [
+    {
+      "width": 1280,
+      "scrollWidth": 1280
+    },
+    {
+      "width": 768,
+      "scrollWidth": 768
+    },
+    {
+      "width": 390,
+      "scrollWidth": 390
+    },
+    {
+      "width": 320,
+      "scrollWidth": 320
+    }
+  ],
+  "typography": {
+    "cardName": "16px",
+    "cardRole": "12px",
+    "paginationHeight": 44,
+    "adjacentHeight": 44
+  },
+  "upstreamPhotos": "Official Câmara host rejected by environment egress proxy (CONNECT 403); screenshots use real fallback, no substituted photos."
+}

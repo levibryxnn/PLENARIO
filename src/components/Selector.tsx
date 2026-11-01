@@ -1,25 +1,47 @@
 'use client';
 
 import Link from 'next/link';
-import { useMemo, useState } from 'react';
-import { ArrowDown, ArrowLeft, ArrowRight, ArrowUpRight, Check, ChevronLeft, ChevronRight, CircleHelp, Columns2, Fingerprint, MapPin, Search, SlidersHorizontal, X } from 'lucide-react';
+import { useEffect, useMemo, useState } from 'react';
+import {
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUpRight,
+  Check,
+  ChevronLeft,
+  ChevronRight,
+  CircleHelp,
+  Columns2,
+  MapPin,
+  Search,
+  SlidersHorizontal,
+  X,
+} from 'lucide-react';
 import type { DataStatus, Politician } from '@/lib/types';
 import Citation, { formatDate } from './Citation';
+import { Portrait } from './Portrait';
 
-const normalize = (value: string) => value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLocaleLowerCase('pt-BR');
-export function initials(name: string) { return name.split(/\s+/).filter(Boolean).map(s => s[0]).slice(0, 2).join(''); }
-export function Portrait({ politician, large = false }: { politician: Politician; large?: boolean }) {
-  const [failed, setFailed] = useState(false);
-  const showPhoto = Boolean(politician.photoUrl) && !failed;
-  const sourceId = politician.id;
-  return <div className={`portrait ${large ? 'portrait-large' : ''}`} aria-label={showPhoto ? `Foto oficial de ${politician.name}` : `Retrato não disponível de ${politician.name}`}>
-    {showPhoto ? <img className="portrait-image" src={`/api/photos/${encodeURIComponent(sourceId)}`} alt={`Foto oficial de ${politician.name}`} onError={() => setFailed(true)} /> : <><div className="portrait-lines" /><span className="portrait-initials">{initials(politician.name)}</span><span className="portrait-marker">BR / {politician.uf}</span><span className="portrait-caption">RETRATO NÃO DISPONÍVEL</span></>}
-  </div>;
-}
-const unique = (values: string[]) => [...new Set(values)].sort((a, b) => a.localeCompare(b, 'pt-BR'));
-const roleLabel = (role: string) => role === 'Deputado(a) federal' ? 'Deputados federais' : role === 'Senador(a)' ? 'Senadores' : role;
+const normalize = (value: string) =>
+  value
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLocaleLowerCase('pt-BR');
+const unique = (values: string[]) =>
+  [...new Set(values)].sort((a, b) => a.localeCompare(b, 'pt-BR'));
+const roleLabel = (role: string) =>
+  role === 'Deputado(a) federal'
+    ? 'Deputados federais'
+    : role === 'Senador(a)'
+      ? 'Senadores'
+      : role;
 
-export default function Selector({ politicians, status }: { politicians: Politician[]; status: DataStatus }) {
+export default function Selector({
+  politicians,
+  status,
+}: {
+  politicians: Politician[];
+  status: DataStatus;
+}) {
   const [query, setQuery] = useState('');
   const [party, setParty] = useState('');
   const [uf, setUf] = useState('');
@@ -27,75 +49,501 @@ export default function Selector({ politicians, status }: { politicians: Politic
   const [mandateStatus, setMandateStatus] = useState('');
   const [selectedId, setSelectedId] = useState(politicians[0]?.id || '');
   const [compared, setCompared] = useState<string[]>([]);
+  const [comparisonReady, setComparisonReady] = useState(false);
+  useEffect(() => {
+    const known = new Set(politicians.map((p) => p.id));
+    let saved: unknown = [];
+    try {
+      saved = JSON.parse(sessionStorage.getItem('civis-comparison') || '[]');
+    } catch {
+      /* Storage is optional. */
+    }
+    const incoming = new URLSearchParams(window.location.search).get('comparar');
+    const ids = incoming !== null ? incoming.split(',') : Array.isArray(saved) ? saved : [];
+    setCompared(
+      [...new Set(ids.filter((id): id is string => typeof id === 'string' && known.has(id)))].slice(
+        0,
+        4,
+      ),
+    );
+    setComparisonReady(true);
+  }, [politicians]);
+  useEffect(() => {
+    if (!comparisonReady) return;
+    try {
+      sessionStorage.setItem('civis-comparison', JSON.stringify(compared));
+    } catch {
+      /* Navigation still works without storage. */
+    }
+  }, [compared, comparisonReady]);
   const [page, setPage] = useState(1);
   const [compareMessage, setCompareMessage] = useState('');
-  const filtered = useMemo(() => politicians.filter(p => normalize(`${p.name} ${p.fullName || ''}`).includes(normalize(query)) && (!party || p.party === party) && (!uf || p.uf === uf) && (!role || p.role === role) && (!mandateStatus || p.status === mandateStatus)), [politicians, query, party, uf, role, mandateStatus]);
+  const filtered = useMemo(
+    () =>
+      politicians.filter(
+        (p) =>
+          normalize(`${p.name} ${p.fullName || ''}`).includes(normalize(query)) &&
+          (!party || p.party === party) &&
+          (!uf || p.uf === uf) &&
+          (!role || p.role === role) &&
+          (!mandateStatus || p.status === mandateStatus),
+      ),
+    [politicians, query, party, uf, role, mandateStatus],
+  );
   const currentPage = Math.min(page, Math.max(1, Math.ceil(filtered.length / 8)));
   const visible = filtered.slice((currentPage - 1) * 8, currentPage * 8);
-  const selected = filtered.find(p => p.id === selectedId) || filtered[0];
-  const comparedPoliticians = politicians.filter(p => compared.includes(p.id));
+  const selected = visible.find((p) => p.id === selectedId) || visible[0];
+  const comparedPoliticians = politicians.filter((p) => compared.includes(p.id));
   function compare(id: string) {
-    if (compared.includes(id)) { setCompared(compared.filter(i => i !== id)); setCompareMessage(''); return; }
-    if (compared.length === 4) { setCompareMessage('Você pode comparar até quatro perfis. Remova um para adicionar outro.'); return; }
-    setCompared([...compared, id]); setCompareMessage('');
+    if (compared.includes(id)) {
+      setCompared(compared.filter((i) => i !== id));
+      setCompareMessage('');
+      return;
+    }
+    if (compared.length === 4) {
+      setCompareMessage('Você pode comparar até quatro perfis. Remova um para adicionar outro.');
+      return;
+    }
+    setCompared([...compared, id]);
+    setCompareMessage('');
   }
-  function reset() { setQuery(''); setParty(''); setUf(''); setRole(''); setMandateStatus(''); setPage(1); }
+  function reset() {
+    setQuery('');
+    setParty('');
+    setUf('');
+    setRole('');
+    setMandateStatus('');
+    setPage(1);
+  }
   function selectAdjacent(direction: number) {
     if (!selected || !filtered.length) return;
-    const index = filtered.findIndex(p => p.id === selected.id);
+    const index = filtered.findIndex((p) => p.id === selected.id);
     const nextIndex = (index + direction + filtered.length) % filtered.length;
-    setSelectedId(filtered[nextIndex].id); setPage(Math.floor(nextIndex / 8) + 1);
+    setSelectedId(filtered[nextIndex].id);
+    setPage(Math.floor(nextIndex / 8) + 1);
   }
   const hasFilters = query || party || uf || role || mandateStatus;
   const compareUrl = `/comparar?ids=${compared.map(encodeURIComponent).join(',')}`;
-  const historical = politicians.some(p => p.coverage === 'historical');
-  const referenceYears = unique(politicians.map(p => p.referenceDate?.slice(0, 4) || '').filter(Boolean));
+  const historical = politicians.some((p) => p.coverage === 'historical');
+  const referenceYears = unique(
+    politicians.map((p) => p.referenceDate?.slice(0, 4) || '').filter(Boolean),
+  );
   function selectProfile(id: string) {
     setSelectedId(id);
-    if (window.matchMedia('(max-width: 580px)').matches) requestAnimationFrame(() => document.querySelector('.selected-panel')?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches || document.documentElement.dataset.reducedMotion === 'true' ? 'instant' : 'smooth', block: 'start' }));
   }
-  return <div className="selector-page">
-    <section className="explore-intro">
-      <div className="hero-copy"><div className="eyebrow"><span className="status-dot" />INFORMAÇÃO PÚBLICA. ESCOLHA CONSCIENTE.</div><h1>Conheça quem<br />representa <span>você.</span></h1><p>Conheça parlamentares federais por meio de dados oficiais, com fontes e limites visíveis para você conferir.</p></div>
-      <div className="intro-aside"><div className="index-stamp"><Fingerprint size={28} strokeWidth={1} /><span>SEM NOTAS.<br />SEM LADOS.<br /><strong>COM FONTES.</strong></span></div><a href="#explorar" className="text-link">Explore os perfis<ArrowDown size={15} /></a></div>
-    </section>
-    <div className="coverage-strip"><span className="coverage-label">RECORTE DOCUMENTAL</span><span>{historical ? `Registros históricos e correntes · ${referenceYears.length ? `referências de ${referenceYears.join(' / ')}` : 'data do documento'}.` : 'Câmara e Senado · registros correntes importados das fontes oficiais.'} Consulte a referência de cada perfil.</span><Link href="/metodologia">Entenda a cobertura<ArrowUpRight /></Link></div>
-    {status.stale && <p className="data-notice" role="status">Coleta antiga ou recorte histórico. Os registros não comprovam a situação atual; confira as datas e a fonte de cada perfil.</p>}
-    {status.lastRun?.status === 'failed' && <p className="data-notice" role="status">A última atualização não foi concluída. Exibimos o último lote disponível, com sua data de referência.</p>}
-    <section id="explorar" className="explorer" aria-label="Seleção de políticos">
-      <div className="explorer-topline"><div className="eyebrow">01 <span className="line-divider" /> ESCOLHA UM PERFIL</div><span className="small-code">DADOS, NÃO JULGAMENTOS</span></div>
-      <div className="filter-panel">
-        <label className="search-field"><Search size={19} aria-hidden="true" /><span className="sr-only">Buscar político por nome</span><input placeholder="Quem você quer conhecer?" aria-label="Buscar político por nome" value={query} onChange={e => { setQuery(e.target.value); setPage(1); }} />{query && <button onClick={() => { setQuery(''); setPage(1); }} aria-label="Limpar pesquisa"><X size={16} /></button>}</label>
-        <div className="filter-fields"><SlidersHorizontal size={17} className="filter-icon" aria-hidden="true" />
-          <label><span>Partido</span><select aria-label="Filtrar por partido" value={party} onChange={e => { setParty(e.target.value); setPage(1); }}><option value="">Todos</option>{unique(politicians.map(p => p.party)).map(v => <option key={v}>{v}</option>)}</select></label>
-          <label><span>Estado</span><select aria-label="Filtrar por estado" value={uf} onChange={e => { setUf(e.target.value); setPage(1); }}><option value="">Todo o Brasil</option>{unique(politicians.map(p => p.uf)).map(v => <option key={v}>{v}</option>)}</select></label>
-          <label><span>Mandato</span><select aria-label="Filtrar por situação do mandato" value={mandateStatus} onChange={e => { setMandateStatus(e.target.value); setPage(1); }}><option value="">Todas as situações</option>{unique(politicians.map(p => p.status)).map(v => <option key={v}>{v}</option>)}</select></label>
+  return (
+    <div className="selector-page">
+      <section className="explore-intro">
+        <div className="hero-copy">
+          <div className="eyebrow">
+            <span className="status-dot" />
+            POLÍTICA BRASILEIRA, ÀS CLARAS
+          </div>
+          <h1>
+            Conheça quem
+            <br />
+            representa <span>você.</span>
+          </h1>
+          <p>
+            Explore trajetórias, consulte documentos e compare a atuação de deputados e senadores.
+            Cada informação vem com uma fonte para você conferir.
+          </p>
         </div>
-      </div>
-      <div className="role-tabs" role="group" aria-label="Filtrar políticos por cargo">
-        <button type="button" className={!role ? 'is-active' : ''} aria-pressed={!role} onClick={() => { setRole(''); setPage(1); }}>Todos</button>
-        {unique(politicians.map(p => p.role)).map(value => <button type="button" key={value} className={role === value ? 'is-active' : ''} aria-pressed={role === value} onClick={() => { setRole(role === value ? '' : value); setPage(1); }}>{roleLabel(value)}</button>)}
-      </div>
-      <div className="results-heading"><p aria-live="polite"><strong>{filtered.length.toString().padStart(2, '0')}</strong> perfis no recorte{hasFilters ? ' com esses filtros' : ''}</p>{hasFilters ? <button className="text-link" onClick={reset}>Limpar filtros<X size={13} /></button> : <span>ORDEM ALFABÉTICA <ArrowDown size={12} /></span>}</div>
-      {!selected ? <div className="empty-state"><Search size={28} /><h2>{politicians.length ? 'Nenhum perfil encontrado' : 'Aguardando dados documentados'}</h2><p>{politicians.length ? 'Experimente outro nome ou ajuste os filtros.' : 'Nenhum registro foi importado. Consulte a cobertura e o estado da integração.'}</p><button className="button" onClick={reset}>Limpar busca e filtros</button></div> : <div className="selection-layout">
-        <div className="roster-column"><div className="roster-grid" aria-label="Perfis disponíveis">{visible.map((p, i) => <article key={p.id} className={`character-card ${selected.id === p.id ? 'is-selected' : ''}`}>
-          <button className="character-select" onClick={() => selectProfile(p.id)} aria-pressed={selected.id === p.id} aria-label={`Selecionar ${p.name}`}>
-            <span className="card-index">{String((currentPage - 1) * 8 + i + 1).padStart(2, '0')}</span><span className="card-selected-indicator">{selected.id === p.id ? <Check size={12} /> : <span />}</span>
-            <Portrait politician={p} /><span className="card-info"><span className="card-party">{p.party} <span>/</span> {p.uf}</span><strong>{p.name}</strong><span className="card-role">{p.role}</span></span>
-          </button><button onClick={() => compare(p.id)} className={`card-compare ${compared.includes(p.id) ? 'is-added' : ''}`} aria-pressed={compared.includes(p.id)} aria-label={`${compared.includes(p.id) ? 'Remover' : 'Adicionar'} ${p.name} ${compared.includes(p.id) ? 'da' : 'à'} comparação`}>{compared.includes(p.id) ? <Check size={12} /> : <Columns2 size={12} />}<span>{compared.includes(p.id) ? 'Selecionado' : 'Comparar'}</span></button>
-        </article>)}</div><div className="roster-bottom"><span>Selecione um card para explorar</span><div className="pagination"><button aria-label="Página anterior" disabled={currentPage <= 1} onClick={() => setPage(currentPage - 1)}><ChevronLeft size={16} /></button><span>{currentPage} / {Math.max(1, Math.ceil(filtered.length / 8))}</span><button aria-label="Próxima página" disabled={currentPage >= Math.ceil(filtered.length / 8)} onClick={() => setPage(currentPage + 1)}><ChevronRight size={16} /></button></div></div></div>
-        <aside className="selected-panel" aria-label="Perfil selecionado">
-          <div className="selected-panel-top"><span className="eyebrow"><span className="status-dot" />PERFIL SELECIONADO</span><div className="adjacent-controls"><button aria-label="Selecionar perfil anterior" onClick={() => selectAdjacent(-1)}><ArrowLeft size={16} /></button><button aria-label="Selecionar próximo perfil" onClick={() => selectAdjacent(1)}><ArrowRight size={16} /></button></div></div>
-          <div className="selected-visual"><Portrait politician={selected} large /><span className="visual-cross cross-top">+</span><span className="visual-cross cross-bottom">+</span><div className="visual-id">REGISTRO OFICIAL<br /><strong>{selected.id.startsWith('senado:') ? 'SF' : 'CD'} · {selected.officialId}</strong></div><span className="visual-vertical">TRAJETÓRIAS EM PERSPECTIVA</span></div>
-          <div className="selected-content"><div className="selected-meta"><span className="tag">{selected.party}</span><span><MapPin size={13} />{selected.uf}</span><span>{selected.coverage === 'historical' ? 'Registro histórico' : 'Fonte oficial'}</span></div><h2>{selected.name}</h2><p className="selected-role">{selected.role}</p><div className="selected-reference"><span>Referência do registro</span><strong>{formatDate(selected.referenceDate)}</strong></div><Citation source={selected.source} label="Conferir identificação na fonte" /><div className="selected-actions"><Link className="button primary" href={`/politicos/${encodeURIComponent(selected.id)}`}>Explorar perfil<ArrowUpRight size={17} /></Link><button className="button icon-button" aria-label={`${compared.includes(selected.id) ? 'Remover' : 'Adicionar'} ${selected.name} à comparação`} aria-pressed={compared.includes(selected.id)} onClick={() => compare(selected.id)}>{compared.includes(selected.id) ? <Check size={18} /> : <Columns2 size={18} />}</button></div></div>
+        <aside className="intro-aside">
+          <span className="hero-aside-label">ENTENDER PARA PARTICIPAR</span>
+          <p>
+            O que faz quem
+            <br />
+            representa você?
+          </p>
+          <Link href="/cargos" className="text-link">
+            Conheça os cargos públicos
+            <ArrowUpRight size={16} />
+          </Link>
         </aside>
-      </div>}
-    </section>
-    <section className="principle-row"><div className="eyebrow">A INFORMAÇÃO É PÚBLICA.<br />A CONCLUSÃO É SUA.</div><p>Sem rankings de honestidade ou recomendações de voto. Cada informação tem contexto, data e uma fonte que você pode conferir.</p><Link href="/metodologia" className="text-link">Nossa metodologia<ArrowUpRight size={16} /></Link></section>
-    {compared.length > 0 && <div className="comparison-dock" aria-label="Seleção para comparação"><div><Columns2 size={18} /><strong>{compared.length} / 4</strong><span className="dock-label">perfis para comparar</span></div><div className="dock-names">{comparedPoliticians.map(p => <button key={p.id} onClick={() => compare(p.id)} aria-label={`Remover ${p.name} da comparação`}>{p.name}<X size={12} /></button>)}</div><Link className={`button primary ${compared.length < 2 ? 'is-disabled' : ''}`} href={compareUrl} aria-disabled={compared.length < 2} onClick={e => { if (compared.length < 2) e.preventDefault(); }}>Comparar<ArrowRight size={15} /></Link><button className="dock-close" onClick={() => { setCompared([]); setCompareMessage(''); }} aria-label="Limpar comparação"><X size={17} /></button></div>}
-    <p className="sr-only" role="status">{compareMessage || `${selected?.name ? `Perfil selecionado: ${selected.name}. ` : ''}${compared.length ? `${compared.length} perfis selecionados para comparação` : ''}`}</p>
-    {compareMessage && <div className="compare-message" role="alert"><CircleHelp size={16} />{compareMessage}<button onClick={() => setCompareMessage('')} aria-label="Fechar aviso"><X size={14} /></button></div>}
-  </div>;
+      </section>
+      <div className="coverage-strip">
+        <span className="coverage-label">FONTES OFICIAIS</span>
+        <span>
+          {historical
+            ? `Registros históricos e correntes · ${referenceYears.length ? `referências de ${referenceYears.join(' / ')}` : 'data do documento'}.`
+            : 'Câmara e Senado · registros correntes importados das fontes oficiais.'}{' '}
+          Consulte a referência de cada perfil.
+        </span>
+        <Link href="/metodologia">
+          Entenda a cobertura
+          <ArrowUpRight />
+        </Link>
+      </div>
+      {status.stale && (
+        <p className="data-notice" role="status">
+          Coleta antiga ou recorte histórico. Os registros não comprovam a situação atual; confira
+          as datas e a fonte de cada perfil.
+        </p>
+      )}
+      {status.lastRun?.status === 'failed' && (
+        <p className="data-notice" role="status">
+          A última atualização não foi concluída. Exibimos o último lote disponível, com sua data de
+          referência.
+        </p>
+      )}
+      <section id="explorar" className="explorer" aria-label="Seleção de políticos">
+        <div className="explorer-topline">
+          <div>
+            <p className="eyebrow">CONSULTA PÚBLICA</p>
+            <h2>Encontre seus representantes</h2>
+          </div>
+          <span className="small-code">Câmara dos Deputados e Senado Federal</span>
+        </div>
+        <div className="filter-panel">
+          <label className="search-field">
+            <Search size={19} aria-hidden="true" />
+            <span className="sr-only">Buscar político por nome</span>
+            <input
+              placeholder="Busque um deputado ou senador"
+              aria-label="Buscar político por nome"
+              value={query}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                setPage(1);
+              }}
+            />
+            {query && (
+              <button
+                onClick={() => {
+                  setQuery('');
+                  setPage(1);
+                }}
+                aria-label="Limpar pesquisa"
+              >
+                <X size={16} />
+              </button>
+            )}
+          </label>
+          <div className="filter-fields">
+            <SlidersHorizontal size={17} className="filter-icon" aria-hidden="true" />
+            <label>
+              <span>Partido</span>
+              <select
+                aria-label="Filtrar por partido"
+                value={party}
+                onChange={(e) => {
+                  setParty(e.target.value);
+                  setPage(1);
+                }}
+              >
+                <option value="">Todos</option>
+                {unique(politicians.map((p) => p.party)).map((v) => (
+                  <option key={v}>{v}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              <span>Estado</span>
+              <select
+                aria-label="Filtrar por estado"
+                value={uf}
+                onChange={(e) => {
+                  setUf(e.target.value);
+                  setPage(1);
+                }}
+              >
+                <option value="">Todo o Brasil</option>
+                {unique(politicians.map((p) => p.uf)).map((v) => (
+                  <option key={v}>{v}</option>
+                ))}
+              </select>
+            </label>
+            <label>
+              <span>Mandato</span>
+              <select
+                aria-label="Filtrar por situação do mandato"
+                value={mandateStatus}
+                onChange={(e) => {
+                  setMandateStatus(e.target.value);
+                  setPage(1);
+                }}
+              >
+                <option value="">Todas as situações</option>
+                {unique(politicians.map((p) => p.status)).map((v) => (
+                  <option key={v}>{v}</option>
+                ))}
+              </select>
+            </label>
+          </div>
+        </div>
+        <div className="role-tabs" role="group" aria-label="Filtrar políticos por cargo">
+          <button
+            type="button"
+            className={!role ? 'is-active' : ''}
+            aria-pressed={!role}
+            onClick={() => {
+              setRole('');
+              setPage(1);
+            }}
+          >
+            Todos
+          </button>
+          {unique(politicians.map((p) => p.role)).map((value) => (
+            <button
+              type="button"
+              key={value}
+              className={role === value ? 'is-active' : ''}
+              aria-pressed={role === value}
+              onClick={() => {
+                setRole(role === value ? '' : value);
+                setPage(1);
+              }}
+            >
+              {roleLabel(value)}
+            </button>
+          ))}
+        </div>
+        <div className="results-heading">
+          <p aria-live="polite">
+            <strong>{filtered.length.toString().padStart(2, '0')}</strong> perfis disponíveis
+            {hasFilters ? ' com esses filtros' : ''}
+          </p>
+          {hasFilters ? (
+            <button className="text-link" onClick={reset}>
+              Limpar filtros
+              <X size={13} />
+            </button>
+          ) : (
+            <span>
+              ORDEM ALFABÉTICA <ArrowDown size={12} />
+            </span>
+          )}
+        </div>
+        {selected && (
+          <a className="mobile-selection-link" href="#perfil-selecionado">
+            Ver resumo de {selected.name}
+            <ArrowDown size={16} aria-hidden="true" />
+          </a>
+        )}
+        {!selected ? (
+          <div className="empty-state">
+            <Search size={28} />
+            <h2>
+              {politicians.length ? 'Nenhum perfil encontrado' : 'Aguardando dados documentados'}
+            </h2>
+            <p>
+              {politicians.length
+                ? 'Experimente outro nome ou ajuste os filtros.'
+                : 'Nenhum registro foi importado. Consulte a cobertura e o estado da integração.'}
+            </p>
+            <button className="button" onClick={reset}>
+              Limpar busca e filtros
+            </button>
+          </div>
+        ) : (
+          <div className="selection-layout">
+            <div className="roster-column">
+              <div className="roster-grid" aria-label="Perfis disponíveis">
+                {visible.map((p, i) => (
+                  <article
+                    key={p.id}
+                    className={`character-card ${selected.id === p.id ? 'is-selected' : ''}`}
+                  >
+                    <button
+                      className="character-select"
+                      onClick={() => selectProfile(p.id)}
+                      aria-pressed={selected.id === p.id}
+                      aria-label={`Selecionar ${p.name}`}
+                    >
+                      <span className="card-index">
+                        {String((currentPage - 1) * 8 + i + 1).padStart(2, '0')}
+                      </span>
+                      <span className="card-selected-indicator">
+                        {selected.id === p.id ? <Check size={12} /> : <span />}
+                      </span>
+                      <Portrait politician={p} />
+                      <span className="card-info">
+                        <span className="card-party">
+                          {p.party} <span>/</span> {p.uf}
+                        </span>
+                        <strong>{p.name}</strong>
+                        <span className="card-role">{p.role}</span>
+                      </span>
+                    </button>
+                    <button
+                      onClick={() => compare(p.id)}
+                      className={`card-compare ${compared.includes(p.id) ? 'is-added' : ''}`}
+                      aria-pressed={compared.includes(p.id)}
+                      aria-label={`${compared.includes(p.id) ? 'Remover' : 'Adicionar'} ${p.name} ${compared.includes(p.id) ? 'da' : 'à'} comparação`}
+                    >
+                      {compared.includes(p.id) ? <Check size={12} /> : <Columns2 size={12} />}
+                      <span>{compared.includes(p.id) ? 'Selecionado' : 'Comparar'}</span>
+                    </button>
+                  </article>
+                ))}
+              </div>
+              <div className="roster-bottom">
+                <span>Selecione um retrato para ver o resumo</span>
+                <div className="pagination">
+                  <button
+                    aria-label="Página anterior"
+                    disabled={currentPage <= 1}
+                    onClick={() => setPage(currentPage - 1)}
+                  >
+                    <ChevronLeft size={16} />
+                  </button>
+                  <span>
+                    Página {currentPage} de {Math.max(1, Math.ceil(filtered.length / 8))}
+                  </span>
+                  <button
+                    aria-label="Próxima página"
+                    disabled={currentPage >= Math.ceil(filtered.length / 8)}
+                    onClick={() => setPage(currentPage + 1)}
+                  >
+                    <ChevronRight size={16} />
+                  </button>
+                </div>
+              </div>
+            </div>
+            <aside
+              id="perfil-selecionado"
+              className="selected-panel"
+              aria-label="Perfil selecionado"
+            >
+              <div className="selected-panel-top">
+                <span className="eyebrow">
+                  <span className="status-dot" />
+                  PERFIL SELECIONADO
+                </span>
+                <div className="adjacent-controls">
+                  <button
+                    aria-label="Selecionar perfil anterior"
+                    onClick={() => selectAdjacent(-1)}
+                  >
+                    <ArrowLeft size={16} />
+                  </button>
+                  <button aria-label="Selecionar próximo perfil" onClick={() => selectAdjacent(1)}>
+                    <ArrowRight size={16} />
+                  </button>
+                </div>
+              </div>
+              <div className="selected-visual">
+                <Portrait politician={selected} large />
+                <div className="visual-id">
+                  REGISTRO OFICIAL
+                  <br />
+                  <strong>
+                    {selected.id.startsWith('senado:') ? 'SF' : 'CD'} · {selected.officialId}
+                  </strong>
+                </div>
+              </div>
+              <div className="selected-content">
+                <div className="selected-meta">
+                  <span className="tag">{selected.party}</span>
+                  <span>
+                    <MapPin size={13} />
+                    {selected.uf}
+                  </span>
+                  <span>
+                    {selected.coverage === 'historical' ? 'Registro histórico' : 'Fonte oficial'}
+                  </span>
+                </div>
+                <h2>{selected.name}</h2>
+                <p className="selected-role">{selected.role}</p>
+                <div className="selected-reference">
+                  <span>Referência do registro</span>
+                  <strong>{formatDate(selected.referenceDate)}</strong>
+                </div>
+                <Citation source={selected.source} label="Conferir identificação na fonte" />
+                <div className="selected-actions">
+                  <Link
+                    className="button primary"
+                    href={`/politicos/${encodeURIComponent(selected.id)}`}
+                  >
+                    Explorar perfil
+                    <ArrowUpRight size={17} />
+                  </Link>
+                  <button
+                    className="button icon-button"
+                    aria-label={`${compared.includes(selected.id) ? 'Remover' : 'Adicionar'} ${selected.name} à comparação`}
+                    aria-pressed={compared.includes(selected.id)}
+                    onClick={() => compare(selected.id)}
+                  >
+                    {compared.includes(selected.id) ? <Check size={18} /> : <Columns2 size={18} />}
+                  </button>
+                </div>
+              </div>
+            </aside>
+          </div>
+        )}
+      </section>
+      <section className="principle-row">
+        <div className="eyebrow">
+          A INFORMAÇÃO É PÚBLICA.
+          <br />A CONCLUSÃO É SUA.
+        </div>
+        <p>
+          Sem rankings de honestidade ou recomendações de voto. Cada informação tem contexto, data e
+          uma fonte que você pode conferir.
+        </p>
+        <Link href="/metodologia" className="text-link">
+          Nossa metodologia
+          <ArrowUpRight size={16} />
+        </Link>
+      </section>
+      {compared.length > 0 && (
+        <div className="comparison-dock" aria-label="Seleção para comparação">
+          <div>
+            <Columns2 size={18} />
+            <strong>{compared.length} / 4</strong>
+            <span className="dock-label">perfis para comparar</span>
+          </div>
+          <div className="dock-names">
+            {comparedPoliticians.map((p) => (
+              <button
+                key={p.id}
+                onClick={() => compare(p.id)}
+                aria-label={`Remover ${p.name} da comparação`}
+              >
+                {p.name}
+                <X size={12} />
+              </button>
+            ))}
+          </div>
+          <Link
+            className={`button primary ${compared.length < 2 ? 'is-disabled' : ''}`}
+            href={compareUrl}
+            aria-disabled={compared.length < 2}
+            onClick={(e) => {
+              if (compared.length < 2) e.preventDefault();
+            }}
+          >
+            Comparar
+            <ArrowRight size={15} />
+          </Link>
+          <button
+            className="dock-close"
+            onClick={() => {
+              setCompared([]);
+              setCompareMessage('');
+            }}
+            aria-label="Limpar comparação"
+          >
+            <X size={17} />
+          </button>
+        </div>
+      )}
+      <p className="sr-only" role="status">
+        {compareMessage ||
+          `${selected?.name ? `Perfil selecionado: ${selected.name}. ` : ''}${compared.length ? `${compared.length} perfis selecionados para comparação` : ''}`}
+      </p>
+      {compareMessage && (
+        <div className="compare-message" role="alert">
+          <CircleHelp size={16} />
+          {compareMessage}
+          <button onClick={() => setCompareMessage('')} aria-label="Fechar aviso">
+            <X size={14} />
+          </button>
+        </div>
+      )}
+    </div>
+  );
 }
 
 export { Selector };

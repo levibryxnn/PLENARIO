@@ -1,52 +1,76 @@
-# Estado do projeto — 27/10/2026
+# Estado do projeto
 
-## Objetivo e entrega atual
+Última revisão desta página: **31/10/2026**. O estado abaixo distingue a versão entregue antes desta rodada, as alterações entregues e as evidências executadas. Publicação de repositório, validação local e deploy público são etapas diferentes.
 
-Nome público do produto: PLENÁRIO (logo vetorial com “Á” dourado, título, navegação, rodapé e galerias atualizados). Prefixo técnico `CIVIS_*` e caminho de banco mantidos para compatibilidade. Núcleo funcional de consulta documental de parlamentares federais em exercício. A busca atual reúne a lista corrente completa da Câmara e do Senado; ainda não é cobertura completa da política brasileira. Referência do Gemini analisada, não tratada como evidência de dados, backend ou testes (GEMINI-REVIEW.md).
+## Objetivo atual
 
-## Arquitetura vigente / stack
+Auditar o código, tornar sua organização legível e revisar a experiência pública do PLENÁRIO sem perder fontes, rigor editorial ou funções existentes. Esta rodada inclui pesquisa de UI, revisão visual responsiva, correções de segurança/dados que tenham evidência e controles reproduzíveis de qualidade.
 
-Next16.4.3, React19.3.1, TypeScript, Node24, SQLite node:sqlite, Zod, Radix Dialog, Lucide, Open Props (só easings CSS) e CSS próprio. UI pública SSR com ilhas interativas, conector server-side, persistência e edição isoladas. Sem serviços pagos, sem infraestrutura publicada. Repositório: `src/app`, `src/components`, `src/lib`, `scripts`, `data`, `tests`, `docs`.
+## Arquitetura e stack
 
-## Dados e integrações
+Next.js 16.4.3 App Router, React 19.3.1, TypeScript, **Node 24**, SQLite (`node:sqlite`), Zod, Radix Dialog, Lucide, Open Props e CSS. Interface pública renderizada no servidor com interações de cliente; conectores e persistência ficam no servidor. Prettier é ferramenta somente de desenvolvimento. Não há infraestrutura paga contratada ou deploy público verificado.
 
-API real Câmara v2: lista/detalhe, histórico, retratos e proposições. Serviço atual do Senado: lista de parlamentares em exercício, mandato, legislatura e partido/UF. Última coleta: 513 deputados e 81 senadores em exercício (27/10/2026). Até 5 propostas por deputado; contagem é cobertura importada, não produção total. Seleção da Câmara é alfabética, sem representatividade estatística alegada. IDs oficiais e fontes por registro, sem contatos pessoais ou acusações.
+Estrutura: `src/app/` (páginas/APIs), `src/components/` (UI), `src/lib/` (domínio/dados/segurança), `scripts/`, `data/`, `tests/` e `docs/`. [Arquitetura](ARCHITECTURE.md).
 
-Modelo: politicians com ID `camara:<id>` ou `senado:<id>`, versões JSON e checksum; import_runs; corrections; editorial_records; audit. Fonte guarda datas distintas de evento/publicação/coleta/verificação, órgão, URL, identificador, trecho, tipo e verificação. Histórico oficial2015 separado. Snapshot atual permite inicialização offline; renovação pelo importador. SQLite mantém lotes anteriores/versões e publica apenas lote ativo na seleção. Perfis antigos continuam referenciáveis com data explícita.
+## Modelo e dados integrados
 
-## Concluído
+- IDs estáveis `camara:<id>` e `senado:<id>`; pessoas não são associadas apenas pelo nome.
+- SQLite mantém políticos, versões, lotes de importação, pedidos privados de correção, registros editoriais e auditoria.
+- Fontes guardam órgão, URL, identificador, trecho, tipo de evidência e datas distintas de fato, publicação, coleta e verificação.
+- Câmara: lista, detalhe, histórico, retratos oficiais e até cinco proposições por deputado no lote distribuído.
+- Senado: lista de parlamentares em exercício, mandato, legislatura, partido e UF; proposições e votos ainda pendentes.
+- Snapshots de 27/10/2026: **513 deputados e 81 senadores**. O arquivo histórico de 2015 permanece separado. Restaurar esses arquivos não atualiza seu conteúdo.
 
-Seleção estilo personagem redesenhada em marinho/dourado, com hero editorial e ilustração arquitetônica vetorial original; retratos oficiais da Câmara e fallback tipográfico no Senado; busca sem acentos, chips reais de cargo, filtros partido/UF/situação, paginação, perfil detalhado, timeline, proposições, modal de fonte, comparação 2–4, movimento reduzido, teclado, mobile e estados de falha/ausência/dados antigos. API com validação/paginação. Atualização transacional, timeout/retry/domínio restrito e logs. Correções persistidas privadamente. Admin desativado sem senha, sessão assinada/HttpOnly, revisão sensível, aprovação/rejeição com justificativa e auditoria. Revalidação pública de registros sensíveis vencidos evita apresentação como situação vigente.
+[Proveniência e limites](SNAPSHOT.md). TSE, DataJud, TCU e Portal da Transparência permanecem pesquisados e não integrados.
 
-## Decisões técnicas
+## Funcionalidades existentes
 
-SQLite para reduzir pré-requisitos e custo no MVP; PostgreSQL/worker quando carga justificar. CSS e tabelas evitam bibliotecas redundantes de gráficos/carrosséis. Radix cuida do foco no drawer e diálogos; Open Props fornece 5,5 KB de tokens de easing em CSS, sem JS. Retratos são carregados da URL oficial retornada pela Câmara, sem cópia local, com validação do ID e fallback tipográfico; os termos de reutilização devem ser revisados antes de distribuição fora da fonte oficial. Não houve cópia de código dos projetos cívicos pesquisados; bibliotecas reutilizadas têm licença conferida. Nenhum resumo por IA é publicado como prova.
+Busca sem acentos; filtros por cargo, partido, UF e situação; seleção por retrato e paginação; perfis com trajetória, proposições e fontes; comparação de até quatro pessoas; guia de cargos em linguagem simples; menu móvel com foco/Escape; movimento reduzido; estados de falha e dados ausentes; API paginada; importações transacionais com timeout/retry e preservação de cache.
 
-## Validação efetivamente executada
+Pedidos de correção são privados. A administração fica desativada sem senha própria. Quando configurada, há sessão autenticada, rascunhos, aprovação/rejeição de registros sensíveis com justificativa e histórico. Publicações sensíveis expiradas não permanecem como situação vigente sem revisão.
 
-- Instalação `npm ci` com lockfile repetida; `npm audit`: zero vulnerabilidades conhecidas reportadas (não é auditoria completa).
-- `npm run typecheck`: passou após a integração da lista do Senado e expansão para 513 deputados.
-- `npm test`:28 testes passaram,0 falhas,0 ignorados. Dados/IDs/duplicatas/datas/fontes, SQL/filtros/paginação, cache/retries/SSRF, nulos reais, versões/lote ativo, dez estados jurídicos, revisão humana, expiração, auditoria, limite real de corpo, origem, senhas/sessões e adulteração.
-- `npm run build`: passou sem warnings após correções. A página inicial usa resumos dos cards para reduzir o SSR; o perfil consulta o registro completo.
-- `npm run db:init`:594 registros (513 Câmara + 81 Senado); repetição preservou base.
-- `npm run data:import -- --source=camara --limit=513 --snapshot`:513 registros oficiais persistidos; `--source=senado --snapshot`:81 registros oficiais persistidos. Falhas anteriores registradas, cache preservado.
-- Navegador Playwright/Chromium: busca/filtros/seleção/empty, perfil correto, fonte/foco/Escape, comparação, autenticação/CSRF, pedido persistido privado, rascunho inválido bloqueado e rejeição; desktop/mobile390/reduced-motion. **7/7 passaram em 16,0s**, incluindo seleção por cargo, menu lateral por Escape/toque, animação e navegação móvel, sem variável de origem pública para exercitar o padrão. Axe: zero violações WCAG A/AA nas telas testadas, inclusive com menu aberto, sem alegação de certificação. Medição local Chromium1280×720 sem throttling:TTFB116ms,DOMContentLoaded277ms,load352ms,9 solicitações JS/163371bytes; CSS principal60669bytes brutos/13445gzip; não é Lighthouse nem previsão de rede móvel. Evidências: `test-results/home-desktop.png`, `test-results/home-mobile.png`, `playwright-report/index.html` (geradas e ignoradas no Git).
+## Auditoria e revisão visual concluídas
 
-## Bugs encontrados e corrigidos
+A revisão de código, dados, segurança, UX e dependências foi integrada. A interface agora usa fundo claro de leitura, texto escuro e a marca marinho/dourado; preserva retratos e fontes, com fallback confiável. CSS foi consolidado em seis arquivos por responsabilidade e uma entrada global. Comparação persiste na sessão e no retorno de um perfil; paginação mantém resumo coerente; menu cabe em paisagem; armazenamento negado não impede o uso. Trajetórias são exibidas em ordem de data sem alterar a fonte armazenada.
 
-Nulos em situação e ementa oficiais; perfil com parâmetro URL codificado; CSP de desenvolvimento impedia hidratação; landmarks main aninhados; foco perdido na troca de seleção; origem localhost/127 difere em Next; revisão sensível expirada; limite global indevido da fila pública; limite de corpo só por header. Há testes de regressão relevantes.
+Foram corrigidos limites de streaming, rejeição de SVG no proxy, revisão obrigatória de conteúdo jurídico importado, portas/IDs oficiais, permissões de banco e unicidade de IDs entre Câmara e Senado. A migração foi testada em um banco legado temporário; nenhum banco externo de produção foi migrado.
 
-## Pendências / limites
+Formatação consistente, tipos com checagem de símbolos não usados, Node 24 e CI foram adicionados. Nenhuma dependência de runtime foi acrescentada.
 
-Não integrados: TSE/DataJud/TCU/Transparência, votos/despesas, promessas, patrimônio, resultados eleitorais completos, municípios, assembleias estaduais e câmaras municipais. Retratos da Câmara são URLs oficiais exibidas por proxy; termos de reutilização e crédito ainda exigem revisão antes de distribuição externa. O Senado está integrado para a lista corrente, mas ainda sem proposições e votações. Não há atestado de inexistência de processos. Admin de identidade única, sem MFA/dupla revisão, triagem detalhada de correções ou notificação. Editor ainda usa JSON no fluxo sensível. Cron documentado mas não instalado; deploy não publicado; nova tarefa/snapshot da nuvem ainda não validada. Limitação de tráfego em memória é local, requer proxy/Redis para múltiplas instâncias. Banco exige volume persistente/backups. Revisão jurídica humana necessária antes de conteúdo de risco. Não há teste em dispositivos físicos, Lighthouse, pentest ou auditoria jurídica completa.
+[Relatório integrado](audit/README.md), [segurança e dados](audit/backend-audit.md), [UX](audit/frontend-audit.md), [pesquisa de design](audit/design-research.md) e [organização](audit/repository-audit.md).
 
-## Próximo incremento
+## Decisões vigentes
 
-1. Integrar o catálogo eleitoral do TSE por eleição: candidaturas, resultados, bens, propostas, fotos e cassações, sem tratá-lo como prova automática de exercício atual.
-2. Adicionar proposições e votações do Senado e ampliar Câmara/Senado para despesas e votos com período e competência contextualizados.
-3. Criar adaptadores oficiais para assembleias estaduais e câmaras municipais; TSE servirá como camada eleitoral, não como substituto de cada casa legislativa.
-4. Triagem de correções, edição granular com fontes por campo, cron/monitoramento e autenticação multiusuário com dupla revisão de material sensível.
+SQLite reduz pré-requisitos do MVP e exige volume persistente. PostgreSQL/worker entram quando houver demanda real. Componentes acessíveis já instalados devem ser reutilizados antes de adicionar bibliotecas redundantes. Snapshots, fotos, galerias e arquivos de download compartilhados não são reformatados nem removidos para evitar perda de proveniência e URLs quebradas.
 
-## Ambiente na nuvem
+Retratos são obtidos do URL oficial vinculado ao ID parlamentar, com validação e alternativa por iniciais; direitos de uso e crédito requerem revisão antes de distribuição ampla. Fontes jurídicas exigem revisão humana individualizada. A plataforma não recomenda votos, não produz notas morais e não preenche lacunas por IA.
 
-`install_script` e `start_skill` salvos no rascunho do ambiente, junto dos domínios de pesquisa e API. Instalação limpa, inicialização repetida e build executados com sucesso. Servidor de produção reiniciado e GET de saúde/lista/perfil real validados. Configuração salva não significa publicação: revisar/salvar nas configurações do ambiente e publicar é ação do usuário. Não foi validada restauração em nova tarefa. Capturas atuais desktop/mobile e perfil/comparação/metodologia persistidas em `docs/preview/assets/`; cópia da tela inicial em `docs/screenshots/`.
+## Testes e evidência
+
+- `npm run format:check`, `npm run typecheck` e `git diff --check`: aprovados.
+- `npm test`: **41 testes aprovados**, nenhum ignorado; inclui migração preservando correções/índices, streaming, SVG, IDs, sessões e barreiras editoriais.
+- `npm run build`: aprovado sem advertência de tracing após explicitar que o caminho do banco é runtime.
+- `npm run test:e2e`: **12 testes aprovados**, nenhum ignorado; filtros, seleção, paginação, perfil, comparação persistente, fontes/foco, correções privadas, autenticação, guia de cargos, fallback de foto, storage negado e menu em paisagem.
+- Axe: zero violações A/AA nas telas testadas (início, perfil, cargos, metodologia, correções, comparação, login e menu); não é certificação.
+- Layout Chromium: sem overflow de raiz em 320, 390, 768 e 1280 px. Controles de paginação e troca de perfil passaram de 25/24 para 44 px. Nomes nos cards passaram de 12 para 16 px e cargos de 9 para 12 px.
+- CSS emitido: 70.568 → 44.504 bytes; gzip calculado localmente 15.351 → 10.336 bytes (**32,7% menor**). Medição não representa uma CDN.
+- Medição local de carregamento: 9 solicitações JS / 163.432 bytes de transferência. TTFB 153 ms, DOMContentLoaded 403 ms, load 404 ms nesta execução, sem throttling; não é Lighthouse nem promessa de desempenho real.
+- `npm audit`: zero vulnerabilidades conhecidas reportadas. CI foi adicionada, mas sua execução remota não foi verificada.
+
+Fotos oficiais não puderam ser recuperadas nesta rede: `www.camara.leg.br` retornou bloqueio de proxy CONNECT 403. Capturas mostram o fallback real, sem fotos substituídas. Testes de sucesso/falha das imagens usam um raster sintético identificado; não validam a disponibilidade atual do órgão.
+
+Evidências: `docs/audit/browser-metrics.json`, `docs/audit/css-metrics.json`, capturas atuais em `docs/preview/assets/` e relatórios locais ignorados em `test-results/`/`playwright-report/`. Arquivos antigos de download foram preservados.
+
+## Pendências e limites
+
+Cobertura federal não equivale à cobertura nacional de todos os cargos. Faltam TSE eleitoral, estados/municípios, votos/despesas, patrimônio, promessas e histórico eleitoral completo. Ausência de registro não é atestado de ausência de processos ou atuação. Não há pesquisa jurídica exaustiva nem revisão jurídica contratada.
+
+Admin usa uma identidade, sem MFA ou revisão por duas pessoas. Editor de conteúdo sensível ainda usa JSON. Correções não têm prazos/notificações/edição granular. Limitação de tráfego em memória atende uma instância; produção com escala exige proteção compartilhada. CSP usa inline necessário ao Next.js; nonce estrito é melhoria futura. Cron, backups recuperáveis, observabilidade e deploy HTTPS precisam de infraestrutura escolhida e verificada.
+
+Não há teste em dispositivos físicos, pentest, auditoria jurídica ou Lighthouse com perfil de usuário real. Licenças das bibliotecas não definem automaticamente a licença da aplicação ou dos dados.
+
+## Ambiente e próxima ação
+
+Há configuração de instalação e inicialização salva no rascunho do ambiente, inclusive instruções de base isolada para testes manuais e domínio Lovable. Um rascunho salvo não aplica regras de rede, não publica o ambiente e não gera um preview externo. Revalidar o ambiente quando a configuração for aplicada; processos não são preservados por publicação.
+
+Próxima ação: disponibilizar o preview na hospedagem escolhida e testar sua URL e acesso às fontes. O link do editor Lovable e o código enviado ao GitHub não comprovam que exista um deploy navegável atualizado. Roteiro: [testes manuais](testing/manual-checklist.md).
