@@ -45,7 +45,9 @@ export default function Header() {
     <>
       <header className="site-header">
         <Link href="/" className="brand" aria-label="PLENÁRIO, início">
-          <img className="brand-logo" src="/plenario-logo.svg" alt="" width="178" height="48" />
+          <span className="brand-logo-frame">
+            <img className="brand-logo" src="/plenario-nova-marca.png" alt="" width="2172" height="724" />
+          </span>
           <span className="brand-subtitle">ÍNDICE PÚBLICO</span>
         </Link>
         <nav aria-label="Navegação principal">
@@ -80,13 +82,15 @@ export default function Header() {
             <Dialog.Content className="mobile-menu-sheet">
               <div className="mobile-menu-heading">
                 <div>
-                  <img
-                    className="mobile-menu-logo"
-                    src="/plenario-logo.svg"
-                    alt="PLENÁRIO"
-                    width="150"
-                    height="40"
-                  />
+                  <span className="brand-logo-frame mobile-menu-logo-frame">
+                    <img
+                      className="mobile-menu-logo"
+                      src="/plenario-nova-marca.png"
+                      alt="PLENÁRIO"
+                      width="2172"
+                      height="724"
+                    />
+                  </span>
                   <Dialog.Title className="sr-only">Navegação PLENÁRIO</Dialog.Title>
                   <Dialog.Description className="mobile-menu-description">
                     Navegue pela plataforma
