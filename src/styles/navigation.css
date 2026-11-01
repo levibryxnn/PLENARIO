@@ -9,11 +9,11 @@
   gap: 24px;
   min-height: 76px;
   padding: 10px 24px;
-  background: rgb(13 34 48 / 94%);
-  color: #f7f3e9;
-  border: 1px solid rgb(255 255 255 / 14%);
+  background: var(--navigation-surface);
+  color: var(--navigation-text);
+  border: 1px solid var(--navigation-line);
   border-radius: 20px;
-  box-shadow: 0 10px 32px rgb(13 34 48 / 12%);
+  box-shadow: var(--shadow);
   -webkit-backdrop-filter: saturate(150%) blur(20px);
   backdrop-filter: saturate(150%) blur(20px);
 }
@@ -24,15 +24,28 @@
   gap: 4px;
   width: 168px;
 }
-.brand-logo {
+.brand-logo-frame {
   display: block;
-  width: 154px;
+  position: relative;
+  width: 168px;
+  aspect-ratio: 2070 / 335;
+  overflow: hidden;
+}
+.brand-logo,
+.mobile-menu-logo {
+  position: absolute;
+  display: block;
+  /* Frame only the transparent margins; the source artwork stays untouched. */
+  width: 104.927536%;
+  max-width: none;
   height: auto;
+  left: -2.657005%;
+  top: -59.104478%;
 }
 .brand-subtitle {
   font-size: 9px;
   letter-spacing: 0.18em;
-  color: #c2ced5;
+  color: var(--navigation-muted);
 }
 .site-header > nav {
   display: flex;
@@ -48,15 +61,15 @@
   min-height: 42px;
   border-radius: 999px;
   font-size: 13px;
-  color: #c8d3d8;
+  color: var(--navigation-muted);
   transition:
     color var(--transition),
     background var(--transition);
 }
 .site-header > nav a:hover,
 .site-header > nav a[aria-current='page'] {
-  color: #fff;
-  background: rgb(255 255 255 / 11%);
+  color: var(--navigation-text);
+  background: var(--navigation-hover);
 }
 .header-actions {
   display: flex;
@@ -70,17 +83,17 @@
   gap: 7px;
   min-width: 44px;
   min-height: 44px;
-  color: #c8d3d8;
+  color: var(--navigation-muted);
 }
 .motion-toggle span {
   display: none;
 }
 .motion-toggle[aria-pressed='true'] {
-  color: var(--gold);
+  color: var(--navigation-active);
 }
 .admin-link {
   font-size: 12px;
-  color: #c8d3d8;
+  color: var(--navigation-muted);
   display: inline-flex;
   align-items: center;
   min-height: 44px;
@@ -92,23 +105,23 @@
   gap: 8px;
   min-height: 44px;
   padding-inline: 15px;
-  border: 1px solid rgb(255 255 255 / 20%);
+  border: 1px solid var(--navigation-line);
   border-radius: 999px;
-  background: rgb(255 255 255 / 8%);
+  background: var(--navigation-surface);
   font-size: 14px;
   transition:
     background var(--transition),
     border-color var(--transition);
 }
 .mobile-menu-trigger:hover {
-  background: rgb(255 255 255 / 15%);
-  border-color: rgb(255 255 255 / 36%);
+  background: var(--navigation-hover);
+  border-color: var(--navigation-muted);
 }
 .mobile-menu-overlay {
   position: fixed;
   inset: 0;
   z-index: 1100;
-  background: rgb(7 21 31 / 58%);
+  background: var(--navigation-overlay);
   -webkit-backdrop-filter: blur(5px);
   backdrop-filter: blur(5px);
   animation: menu-overlay-in 0.18s ease-out both;
@@ -125,11 +138,11 @@
   overflow-y: auto;
   overscroll-behavior: contain;
   padding: 26px;
-  background: rgb(13 34 48 / 96%);
-  color: #f6f2e8;
-  border: 1px solid rgb(255 255 255 / 16%);
+  background: var(--navigation-surface);
+  color: var(--navigation-text);
+  border: 1px solid var(--navigation-line);
   border-radius: 26px;
-  box-shadow: 0 24px 70px rgb(0 0 0 / 30%);
+  box-shadow: var(--navigation-shadow);
   -webkit-backdrop-filter: saturate(140%) blur(24px);
   backdrop-filter: saturate(140%) blur(24px);
   animation: menu-sheet-in 0.24s var(--ease-out-3, ease-out) both;
@@ -140,15 +153,13 @@
   align-items: flex-start;
   gap: 15px;
   padding-bottom: 22px;
-  border-bottom: 1px solid #3b5361;
+  border-bottom: 1px solid var(--navigation-line);
 }
-.mobile-menu-logo {
-  display: block;
-  width: 165px;
-  height: auto;
+.mobile-menu-logo-frame {
+  width: 190px;
 }
 .mobile-menu-description {
-  color: #c6d1d8;
+  color: var(--navigation-muted);
   font-size: 13px;
   margin: 10px 0 0;
 }
@@ -158,13 +169,13 @@
   flex: 0 0 44px;
   width: 44px;
   height: 44px;
-  border: 1px solid #526c7a;
+  border: 1px solid var(--navigation-line);
   border-radius: 50%;
-  background: rgb(255 255 255 / 7%);
+  background: var(--navigation-surface);
   transition: background var(--transition);
 }
 .mobile-menu-close:hover {
-  background: rgb(255 255 255 / 15%);
+  background: var(--navigation-hover);
 }
 .mobile-menu-links {
   display: grid;
@@ -177,21 +188,21 @@
   gap: 15px;
   min-height: 62px;
   padding-block: 12px;
-  border-bottom: 1px solid #3b5361;
+  border-bottom: 1px solid var(--navigation-line);
   font: 24px var(--font-display);
 }
 .mobile-menu-links a:hover,
 .mobile-menu-links a[aria-current='page'] {
-  color: var(--gold);
+  color: var(--navigation-active);
 }
 .mobile-menu-links a[aria-current='page'] {
   padding-inline: 12px;
   margin-inline: -12px;
   border-radius: 12px;
-  background: rgb(255 255 255 / 7%);
+  background: var(--navigation-hover);
 }
 .mobile-menu-index {
-  color: #adbec8;
+  color: var(--navigation-muted);
   font: 12px var(--font-body);
 }
 .mobile-menu-footer {
@@ -204,7 +215,7 @@
 }
 .mobile-menu-footer > span {
   font-size: 11px;
-  color: #becbd3;
+  color: var(--navigation-muted);
   letter-spacing: 0.05em;
 }
 .mobile-menu-footer > a {
@@ -213,7 +224,7 @@
   align-items: center;
   min-height: 44px;
   font-size: 13px;
-  color: var(--gold);
+  color: var(--navigation-active);
 }
 .mobile-menu-sheet[data-state='closed'] {
   animation: menu-sheet-out 0.16s ease-in both;
@@ -290,7 +301,7 @@
     gap: 12px;
   }
   .brand,
-  .brand-logo {
+  .brand-logo-frame:not(.mobile-menu-logo-frame) {
     width: 145px;
   }
   .brand-subtitle {
@@ -302,7 +313,7 @@
     height: auto;
     max-height: 88dvh;
     padding: 34px 22px calc(22px + env(safe-area-inset-bottom));
-    border: 1px solid rgb(255 255 255 / 16%);
+    border: 1px solid var(--navigation-line);
     border-bottom: 0;
     border-radius: 28px 28px 0 0;
     animation-name: menu-sheet-up-in;
@@ -315,7 +326,7 @@
     width: 38px;
     height: 4px;
     border-radius: 999px;
-    background: #8fa0a8;
+    background: var(--navigation-muted);
     transform: translateX(-50%);
   }
   .mobile-menu-sheet[data-state='closed'] {
@@ -330,7 +341,7 @@
 }
 @media (max-width: 380px) {
   .brand,
-  .brand-logo {
+  .brand-logo-frame:not(.mobile-menu-logo-frame) {
     width: 118px;
   }
   .site-header {

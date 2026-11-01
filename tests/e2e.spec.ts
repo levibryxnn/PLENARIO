@@ -26,7 +26,7 @@ test('busca normalizada, filtros, seleção e estado vazio', async ({ page }) =>
   await expect(page).toHaveTitle('PLENÁRIO — Informação pública, escolha sua');
   await expect(page.getByRole('link', { name: 'PLENÁRIO, início' })).toBeVisible();
   const logo = page.locator('.brand-logo');
-  await expect(logo).toHaveAttribute('src', '/plenario-logo.svg');
+  await expect(logo).toHaveAttribute('src', '/plenario-nova-marca.png');
   await expect
     .poll(() => logo.evaluate((image: HTMLImageElement) => image.naturalWidth))
     .toBeGreaterThan(0);

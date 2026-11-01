@@ -3,6 +3,7 @@ import { Header } from '@/components/Header';
 import 'open-props/easings.min.css';
 import './globals.css';
 export const metadata: Metadata = {
+  icons: { icon: { url: '/favicon.png', type: 'image/png', sizes: '64x64' } },
   title: { default: 'PLENÁRIO — Informação pública, escolha sua', template: '%s · PLENÁRIO' },
   description:
     'Explore trajetórias políticas a partir de fontes oficiais. Sem rankings de honestidade, com proveniência e limites visíveis.',
