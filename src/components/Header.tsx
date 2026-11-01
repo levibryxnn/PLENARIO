@@ -46,7 +46,13 @@ export default function Header() {
       <header className="site-header">
         <Link href="/" className="brand" aria-label="PLENÁRIO, início">
           <span className="brand-logo-frame">
-            <img className="brand-logo" src="/plenario-nova-marca.png" alt="" width="2172" height="724" />
+            <img
+              className="brand-logo"
+              src="/plenario-nova-marca.png"
+              alt=""
+              width="2172"
+              height="724"
+            />
           </span>
           <span className="brand-subtitle">ÍNDICE PÚBLICO</span>
         </Link>
