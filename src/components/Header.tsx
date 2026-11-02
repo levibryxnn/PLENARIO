@@ -10,6 +10,8 @@ const mobileLinks = [
   { href: '/', label: 'Início' },
   { href: '/#explorar', label: 'Políticos' },
   { href: '/cargos', label: 'Guia de cargos' },
+  { href: '/projetos', label: 'Projetos' },
+  { href: '/glossario', label: 'Glossário' },
   { href: '/comparar', label: 'Comparador' },
   { href: '/metodologia', label: 'Metodologia' },
 ];
@@ -65,6 +67,12 @@ export default function Header() {
           </Link>
           <Link href="/cargos" aria-current={currentLink('/cargos')}>
             Cargos
+          </Link>
+          <Link href="/projetos" aria-current={currentLink('/projetos')}>
+            Projetos
+          </Link>
+          <Link href="/glossario" aria-current={currentLink('/glossario')}>
+            Glossário
           </Link>
           <Link href="/comparar" aria-current={currentLink('/comparar')}>
             Comparador

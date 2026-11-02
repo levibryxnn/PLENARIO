@@ -39,6 +39,19 @@ jobs:
         run: npx playwright install --with-deps chromium
       - name: Run browser tests
         run: npm run test:e2e
+      - name: Exercise 300 virtual visitors against an isolated local production server
+        shell: bash
+        run: |
+          load_dir="$(mktemp -d)"
+          export CIVIS_DB_PATH="$load_dir/load.db"
+          npm run db:init
+          node node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port 3102 > "$load_dir/server.log" 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          npm run test:load -- --base=http://127.0.0.1:3102 --users=300 --report=test-results/load-300.json || {
+            cat "$load_dir/server.log"
+            exit 1
+          }
       - name: Preserve browser evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
