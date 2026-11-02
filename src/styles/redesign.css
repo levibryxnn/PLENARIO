@@ -305,6 +305,10 @@ p {
   letter-spacing: -0.035em;
 }
 
+.selected-panel {
+  border-color: var(--line);
+}
+
 .selected-panel-top {
   border-color: var(--line);
 }
