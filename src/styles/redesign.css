@@ -283,7 +283,6 @@ p {
 }
 
 .character-card,
-.selected-panel,
 .office-card,
 .level-card {
   border: 1px solid var(--line);
