@@ -23,6 +23,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             PLENÁRIO <span className="muted">/ Informação pública, escolha sua.</span>
           </span>
           <nav aria-label="Links institucionais">
+            <a href="/projetos">Projetos e votações</a>
+            <a href="/glossario">Glossário</a>
             <a href="/metodologia">Fontes e metodologia</a>
             <a href="/correcoes">Solicitar correção</a>
             <a href="/admin">Área editorial</a>
