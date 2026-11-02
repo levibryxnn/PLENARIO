@@ -3,10 +3,13 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 import { dirname } from 'node:path';
 
 const flags = Object.fromEntries(
-  process.argv.slice(2).filter((arg) => arg.startsWith('--')).map((arg) => {
-    const [key, ...value] = arg.slice(2).split('=');
-    return [key, value.join('=')];
-  }),
+  process.argv
+    .slice(2)
+    .filter((arg) => arg.startsWith('--'))
+    .map((arg) => {
+      const [key, ...value] = arg.slice(2).split('=');
+      return [key, value.join('=')];
+    }),
 );
 
 const base = new URL(flags.base || 'http://127.0.0.1:3102');

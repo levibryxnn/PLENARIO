@@ -81,8 +81,8 @@ export default function GlossarioPage() {
         <p className="eyebrow">PARA ENTENDER A POLÍTICA</p>
         <h1>Glossário</h1>
         <p>
-          Palavras que aparecem nos projetos e nas votações, explicadas de maneira simples.
-          Consulte sempre o contexto e a fonte do documento original.
+          Palavras que aparecem nos projetos e nas votações, explicadas de maneira simples. Consulte
+          sempre o contexto e a fonte do documento original.
         </p>
       </header>
       <div className="pl-definition-list">

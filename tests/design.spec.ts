@@ -4,7 +4,9 @@ import AxeBuilder from '@axe-core/playwright';
 const publicRoutes = ['/', '/cargos', '/projetos', '/glossario', '/metodologia', '/comparar'];
 const viewportWidths = [320, 375, 390, 768, 1024, 1440, 1920];
 
-test('o design global não apresenta rolagem horizontal nas larguras principais', async ({ page }) => {
+test('o design global não apresenta rolagem horizontal nas larguras principais', async ({
+  page,
+}) => {
   test.setTimeout(180000);
   for (const width of viewportWidths) {
     await page.setViewportSize({ width, height: 900 });
@@ -15,9 +17,10 @@ test('o design global não apresenta rolagem horizontal nas larguras principais'
         overflow: document.documentElement.scrollWidth > window.innerWidth + 1,
         scrollWidth: document.documentElement.scrollWidth,
       }));
-      expect(overflow, `overflow em ${route} com viewport ${width}px (scrollWidth ${scrollWidth})`).toBe(
-        false,
-      );
+      expect(
+        overflow,
+        `overflow em ${route} com viewport ${width}px (scrollWidth ${scrollWidth})`,
+      ).toBe(false);
     }
   }
 });
@@ -34,9 +37,9 @@ test('proposições têm colunas alinhadas e descrições legíveis', async ({ p
       return { titleX: title.x, descriptionX: description.x, descriptionRight: description.right };
     }),
   );
-  expect(Math.max(...rows.map((r) => r.titleX)) - Math.min(...rows.map((r) => r.titleX))).toBeLessThan(
-    1,
-  );
+  expect(
+    Math.max(...rows.map((r) => r.titleX)) - Math.min(...rows.map((r) => r.titleX)),
+  ).toBeLessThan(1);
   expect(
     Math.max(...rows.map((r) => r.descriptionX)) - Math.min(...rows.map((r) => r.descriptionX)),
   ).toBeLessThan(1);
@@ -44,11 +47,14 @@ test('proposições têm colunas alinhadas e descrições legíveis', async ({ p
 
   await page.setViewportSize({ width: 390, height: 844 });
   await expect(page.locator('.pl-record')).toHaveCount(4);
-  const mobile = await page.locator('.pl-record').first().evaluate((row) => {
-    const a = row.querySelector('.pl-record-title')!.getBoundingClientRect();
-    const b = row.querySelector('.pl-record-description')!.getBoundingClientRect();
-    return { sameColumn: Math.abs(a.x - b.x) < 1, belowTitle: b.top >= a.bottom - 1 };
-  });
+  const mobile = await page
+    .locator('.pl-record')
+    .first()
+    .evaluate((row) => {
+      const a = row.querySelector('.pl-record-title')!.getBoundingClientRect();
+      const b = row.querySelector('.pl-record-description')!.getBoundingClientRect();
+      return { sameColumn: Math.abs(a.x - b.x) < 1, belowTitle: b.top >= a.bottom - 1 };
+    });
   expect(mobile.sameColumn).toBeTruthy();
   expect(mobile.belowTitle).toBeTruthy();
 });

@@ -59,9 +59,9 @@ export default function ProjetosPage() {
       <section className="pl-detail-section" aria-labelledby="projetos-escopo">
         <h2 id="projetos-escopo">O que é possível consultar?</h2>
         <p>
-          Os perfis de parlamentares exibem proposições no recorte disponível das fontes
-          importadas. Uma lista nacional de votações nominais ainda não está integrada.
-          A ausência de um projeto nesta base não significa que ele não exista.
+          Os perfis de parlamentares exibem proposições no recorte disponível das fontes importadas.
+          Uma lista nacional de votações nominais ainda não está integrada. A ausência de um projeto
+          nesta base não significa que ele não exista.
         </p>
         <p className="pl-detail-meta">
           <Link className="text-link" href="/#explorar">
