@@ -11,6 +11,7 @@ import {
   readSession,
   sameOrigin,
   allowAttempt,
+  rateLimitClientKey,
 } from '../src/lib/security';
 let directory: string;
 let password: string;
@@ -83,4 +84,77 @@ test('limite de tentativas impede força bruta contínua por janela', () => {
 });
 test('sessão com segmentos adicionais não é uma credencial válida', () => {
   assert.equal(readSession(`${createSession()}.extra`), null);
+});
+
+test('produção autenticada recusa Host forjado e exige origem pública fixa', () => {
+  const originalEnv = process.env.NODE_ENV;
+  const originalOrigin = process.env.CIVIS_PUBLIC_ORIGIN;
+  const originalPassword = process.env.CIVIS_ADMIN_PASSWORD;
+  try {
+    process.env.NODE_ENV = 'production';
+    process.env.CIVIS_ADMIN_PASSWORD = password;
+    delete process.env.CIVIS_PUBLIC_ORIGIN;
+    assert.equal(
+      sameOrigin(
+        new Request('https://plenario.example/api/admin/login', {
+          headers: { Origin: 'https://attacker.example', Host: 'attacker.example' },
+        }),
+      ),
+      false,
+    );
+    process.env.CIVIS_PUBLIC_ORIGIN = 'https://plenario.example';
+    assert.equal(
+      sameOrigin(
+        new Request('https://localhost/api/admin/login', {
+          headers: { Origin: 'https://plenario.example', Host: 'attacker.example' },
+        }),
+      ),
+      true,
+    );
+    assert.equal(
+      sameOrigin(
+        new Request('https://localhost/api/admin/login', {
+          headers: { Origin: 'https://attacker.example', Host: 'attacker.example' },
+        }),
+      ),
+      false,
+    );
+    process.env.CIVIS_PUBLIC_ORIGIN = 'http://plenario.example';
+    assert.equal(
+      sameOrigin(
+        new Request('https://localhost/api/admin/login', {
+          headers: { Origin: 'http://plenario.example' },
+        }),
+      ),
+      false,
+    );
+  } finally {
+    if (originalEnv === undefined) delete process.env.NODE_ENV;
+    else process.env.NODE_ENV = originalEnv;
+    if (originalOrigin === undefined) delete process.env.CIVIS_PUBLIC_ORIGIN;
+    else process.env.CIVIS_PUBLIC_ORIGIN = originalOrigin;
+    if (originalPassword === undefined) delete process.env.CIVIS_ADMIN_PASSWORD;
+    else process.env.CIVIS_ADMIN_PASSWORD = originalPassword;
+  }
+});
+
+test('limite por cliente ignora IP forjado sem proxy confiável explícito', () => {
+  const original = process.env.CIVIS_TRUSTED_CLIENT_IP_HEADER;
+  const request = new Request('https://plenario.example/api/admin/login', {
+    headers: {
+      'X-Forwarded-For': '10.0.0.4, 203.0.113.20',
+      'CF-Connecting-IP': '203.0.113.20',
+    },
+  });
+  try {
+    delete process.env.CIVIS_TRUSTED_CLIENT_IP_HEADER;
+    assert.equal(rateLimitClientKey(request), 'unknown');
+    process.env.CIVIS_TRUSTED_CLIENT_IP_HEADER = 'x-forwarded-for';
+    assert.equal(rateLimitClientKey(request), 'unknown');
+    process.env.CIVIS_TRUSTED_CLIENT_IP_HEADER = 'cf-connecting-ip';
+    assert.equal(rateLimitClientKey(request), '203.0.113.20');
+  } finally {
+    if (original === undefined) delete process.env.CIVIS_TRUSTED_CLIENT_IP_HEADER;
+    else process.env.CIVIS_TRUSTED_CLIENT_IP_HEADER = original;
+  }
 });
