@@ -17,8 +17,8 @@
   --lime: #876411;
   --cyan: #315468;
   --radius: 10px;
-  --font-body: 'Inter', 'Segoe UI', Arial, sans-serif;
-  --font-display: 'Manrope', 'Segoe UI', Arial, sans-serif;
+  --font-body: var(--pl-inter), 'Inter', 'Segoe UI', Arial, sans-serif;
+  --font-display: var(--pl-manrope), 'Manrope', 'Segoe UI', Arial, sans-serif;
   --shadow: none;
   --navigation-surface: var(--bg);
   --navigation-text: var(--text);

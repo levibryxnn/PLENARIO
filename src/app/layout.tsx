@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Header } from '@/components/Header';
+import { Inter, Manrope } from 'next/font/google';
 import 'open-props/easings.min.css';
 import './globals.css';
 export const metadata: Metadata = {
@@ -8,10 +9,12 @@ export const metadata: Metadata = {
   description:
     'Explore trajetórias políticas a partir de fontes oficiais. Sem rankings de honestidade, com proveniência e limites visíveis.',
 };
+const inter = Inter({ subsets: ['latin'], display: 'swap', variable: '--pl-inter' });
+const manrope = Manrope({ subsets: ['latin'], display: 'swap', variable: '--pl-manrope' });
 export const dynamic = 'force-dynamic';
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="pt-BR">
+    <html lang="pt-BR" className={`${inter.variable} ${manrope.variable}`}>
       <body>
         <a className="skip-link" href="#conteudo">
           Pular para o conteúdo

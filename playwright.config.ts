@@ -32,6 +32,7 @@ export default defineConfig({
       CIVIS_DB_PATH: process.env.CIVIS_E2E_DB,
       CIVIS_ADMIN_PASSWORD: process.env.CIVIS_E2E_ADMIN_PASSWORD,
       CIVIS_ADMIN_NAME: 'editor-teste-e2e',
+      CIVIS_PUBLIC_ORIGIN: baseURL,
     },
   },
 });

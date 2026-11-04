@@ -1,5 +1,6 @@
 import { createHmac, randomBytes, scryptSync, timingSafeEqual } from 'node:crypto';
-import { mkdirSync, readFileSync, writeFileSync, existsSync } from 'node:fs';
+import { mkdirSync, readFileSync, writeFileSync, existsSync, chmodSync } from 'node:fs';
+import { isIP } from 'node:net';
 import path from 'node:path';
 export const SESSION_COOKIE = 'civis_session';
 export function adminConfigured() {
@@ -38,6 +39,7 @@ function sessionKey() {
       if (!existsSync(file)) throw e;
     }
   }
+  chmodSync(file, 0o600);
   return readFileSync(file, 'utf8').trim();
 }
 function sign(value: string) {
@@ -74,14 +76,48 @@ export function readSession(token: string | undefined): { actor: string } | null
     return null;
   }
 }
+/**
+ * Trust only a header replaced by a reverse proxy under our control.
+ * Never use X-Forwarded-For directly: clients can forge it on exposed servers.
+ */
+export function rateLimitClientKey(request: Request): string {
+  const header = process.env.CIVIS_TRUSTED_CLIENT_IP_HEADER;
+  if (header !== 'cf-connecting-ip' && header !== 'x-real-ip') return 'unknown';
+  const candidate = request.headers.get(header)?.trim() ?? '';
+  return isIP(candidate) ? candidate : 'unknown';
+}
+
+/**
+ * In production with the editorial login enabled, require a pinned public
+ * origin. Request Host and forwarded headers are not trusted for CSRF checks.
+ */
 export function sameOrigin(request: Request) {
   const origin = request.headers.get('origin');
   if (!origin) return false;
   try {
-    const expected = new URL(process.env.CIVIS_PUBLIC_ORIGIN ?? request.url);
-    if (!process.env.CIVIS_PUBLIC_ORIGIN && request.headers.get('host'))
+    const received = new URL(origin);
+    if (received.origin !== origin) return false;
+    const configured = process.env.CIVIS_PUBLIC_ORIGIN;
+    if (configured) {
+      const expected = new URL(configured);
+      const loopback = ['localhost', '127.0.0.1', '[::1]'].includes(expected.hostname);
+      if (
+        (expected.protocol !== 'https:' && !(loopback && expected.protocol === 'http:')) ||
+        expected.username ||
+        expected.password ||
+        expected.pathname !== '/' ||
+        expected.search ||
+        expected.hash
+      )
+        return false;
+      return received.origin === expected.origin;
+    }
+    if (process.env.NODE_ENV === 'production' && adminConfigured()) return false;
+    const expected = new URL(request.url);
+    // Local development/test compatibility. Never trust Host for production CSRF checks.
+    if (process.env.NODE_ENV !== 'production' && request.headers.get('host'))
       expected.host = request.headers.get('host')!;
-    return new URL(origin).origin === expected.origin;
+    return received.origin === expected.origin;
   } catch {
     return false;
   }

@@ -1,0 +1,19 @@
+{
+  "name": "PLENÁRIO — preview privado",
+  "image": "mcr.microsoft.com/devcontainers/javascript-node:24-bookworm",
+  "forwardPorts": [3000],
+  "portsAttributes": {
+    "3000": {
+      "label": "PLENÁRIO — preview navegável",
+      "onAutoForward": "openBrowser",
+      "visibility": "private"
+    }
+  },
+  "postCreateCommand": "npm ci --no-fund && CIVIS_DB_PATH=var/preview.db npm run db:init && CIVIS_DB_PATH=var/preview.db npm run build",
+  "postStartCommand": "bash .devcontainer/start-preview.sh",
+  "customizations": {
+    "vscode": {
+      "extensions": ["dbaeumer.vscode-eslint"]
+    }
+  }
+}
