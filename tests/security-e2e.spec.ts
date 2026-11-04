@@ -19,7 +19,7 @@ test('rotas mutáveis exigem Origin confiável e payload JSON sem vazar erro int
 
   const malformed = await request.post(adminPath, {
     headers: { Origin: baseURL!, 'Content-Type': 'application/json' },
-    data: '{"password":',
+    data: Buffer.from('{"password":'),
   });
   expect(malformed.status()).toBe(400);
   expect((await malformed.json()).error).toBe('JSON inválido.');
