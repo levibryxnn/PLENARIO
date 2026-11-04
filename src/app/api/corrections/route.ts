@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { submitCorrection } from '@/lib/db';
-import { sameOrigin, readJsonBody, allowAttempt } from '@/lib/security';
+import { sameOrigin, readJsonBody, allowAttempt, rateLimitClientKey } from '@/lib/security';
 const schema = z.object({
   politicianId: z.string().regex(/^(?:camara|senado):\d+$/),
   subject: z.string().trim().min(20).max(2000),
@@ -17,9 +17,14 @@ const schema = z.object({
 export async function POST(req: Request) {
   if (!sameOrigin(req))
     return NextResponse.json({ error: 'Origem não permitida.' }, { status: 403 });
+  if (!req.headers.get('content-type')?.toLowerCase().startsWith('application/json'))
+    return NextResponse.json({ error: 'Use Content-Type application/json.' }, { status: 415 });
   if (Number(req.headers.get('content-length') ?? 0) > 12000)
     return NextResponse.json({ error: 'Pedido muito grande.' }, { status: 413 });
-  if (!allowAttempt('public-corrections', 30, 60000))
+  if (
+    !allowAttempt('public-corrections:global', 300, 60000) ||
+    !allowAttempt(`public-corrections:${rateLimitClientKey(req)}`, 30, 60000)
+  )
     return NextResponse.json({ error: 'Muitas solicitações. Aguarde um minuto.' }, { status: 429 });
   try {
     const input = schema.parse(await readJsonBody(req, 12000));
