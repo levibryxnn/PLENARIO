@@ -114,6 +114,12 @@ export async function POST(req: Request, { params }: { params: Promise<{ action:
         },
         { status: 400 },
       );
+    if (e instanceof SyntaxError)
+      return NextResponse.json({ error: 'JSON inválido.' }, { status: 400 });
+    if (e instanceof Error && e.message === 'Pedido muito grande.')
+      return NextResponse.json({ error: 'Pedido muito grande.' }, { status: 413 });
+    if (e instanceof Error && e.message === 'Corpo JSON obrigatório.')
+      return NextResponse.json({ error: 'Corpo JSON obrigatório.' }, { status: 400 });
     // Unexpected database or upstream errors must never disclose internals.
     console.error('Falha em ação administrativa', {
       action,
