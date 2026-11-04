@@ -113,7 +113,11 @@ export function sameOrigin(request: Request) {
       return received.origin === expected.origin;
     }
     if (process.env.NODE_ENV === 'production' && adminConfigured()) return false;
-    return received.origin === new URL(request.url).origin;
+    const expected = new URL(request.url);
+    // Local development/test compatibility. Never trust Host for production CSRF checks.
+    if (process.env.NODE_ENV !== 'production' && request.headers.get('host'))
+      expected.host = request.headers.get('host')!;
+    return received.origin === expected.origin;
   } catch {
     return false;
   }
