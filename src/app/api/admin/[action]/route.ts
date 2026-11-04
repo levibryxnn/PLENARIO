@@ -4,6 +4,7 @@ import { z } from 'zod';
 import {
   adminConfigured,
   allowAttempt,
+  rateLimitClientKey,
   createSession,
   verifyPassword,
   SESSION_COOKIE,
@@ -17,6 +18,8 @@ import { importSenado } from '@/lib/senado';
 export async function POST(req: Request, { params }: { params: Promise<{ action: string }> }) {
   if (!sameOrigin(req))
     return NextResponse.json({ error: 'Origem não permitida.' }, { status: 403 });
+  if (!req.headers.get('content-type')?.toLowerCase().startsWith('application/json'))
+    return NextResponse.json({ error: 'Use Content-Type application/json.' }, { status: 415 });
   if (!adminConfigured())
     return NextResponse.json(
       { error: 'Administração desativada. Configure uma senha exclusiva.' },
@@ -29,7 +32,10 @@ export async function POST(req: Request, { params }: { params: Promise<{ action:
   try {
     const input = await readJsonBody(req, 64000);
     if (action === 'login') {
-      if (!allowAttempt('admin-login'))
+      if (
+        !allowAttempt('admin-login:global', 100, 15 * 60 * 1000) ||
+        !allowAttempt(`admin-login:${rateLimitClientKey(req)}`, 5, 15 * 60 * 1000)
+      )
         return NextResponse.json(
           { error: 'Limite de tentativas. Aguarde 15 minutos.' },
           { status: 429 },
@@ -108,9 +114,14 @@ export async function POST(req: Request, { params }: { params: Promise<{ action:
         },
         { status: 400 },
       );
+    // Unexpected database or upstream errors must never disclose internals.
+    console.error('Falha em ação administrativa', {
+      action,
+      type: e instanceof Error ? e.name : 'Unknown',
+    });
     return NextResponse.json(
-      { error: e instanceof Error ? e.message.slice(0, 1500) : 'Falha na operação.' },
-      { status: 400 },
+      { error: 'Não foi possível concluir a operação administrativa.' },
+      { status: 500 },
     );
   }
 }
