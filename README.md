@@ -9,7 +9,8 @@ O núcleo atual permite pesquisar parlamentares federais, consultar perfis e pro
 Requisitos: **Node.js 24**, npm e disco local. A versão do Node está em [`.nvmrc`](.nvmrc); as dependências estão fixadas pelo lockfile.
 
 ```bash
-cd screenshot-exact-match
+git clone https://github.com/levibryxnn/PLENARIO.git
+cd PLENARIO
 npm ci --cache /tmp/civis-npm-cache --no-fund
 npm run db:init
 npm run dev
@@ -24,7 +25,22 @@ npm run build
 npm run start
 ```
 
-Um servidor iniciado no ambiente não cria uma URL pública. O repositório não contém uma hospedagem publicada ou um serviço pago contratado. A versão anterior do template Lovable permanece em [`lovable-preview-legacy`](https://github.com/levibryxnn/screenshot-exact-match/tree/lovable-preview-legacy), sem reescrita de histórico.
+Um servidor iniciado no ambiente não cria uma URL pública. O repositório não contém uma hospedagem publicada ou um serviço pago contratado. A versão anterior do template Lovable permanece em [`lovable-preview-legacy`](https://github.com/levibryxnn/PLENARIO/tree/lovable-preview-legacy), sem reescrita de histórico.
+
+## Preview navegável e privado
+
+A [branch de auditoria e preview](https://github.com/levibryxnn/PLENARIO/tree/security/audit-and-preview-2026-11)
+contém uma configuração de **GitHub Codespaces** que instala Node 24, compila o Next.js,
+inicializa um SQLite próprio e encaminha a porta 3000 de forma **privada**. Ao criar o Codespace,
+abra a aba **PORTAS** e selecione a URL do PLENÁRIO. Esta é a aplicação Next.js real, não uma galeria
+de imagens. A administração permanece desativada e nenhum banco de produção é usado.
+
+[Abrir preview no Codespaces](https://codespaces.new/levibryxnn/PLENARIO/tree/security/audit-and-preview-2026-11)
+
+O Codespace precisa ser criado/iniciado por quem tem acesso ao GitHub e pode consumir a cota
+de computação do GitHub; este link não representa hospedagem pública permanente. Para revisar
+os cuidados de implantação, consulte [SECURITY.md](SECURITY.md) e
+[Auditoria de novembro de 2026](docs/SECURITY-AUDIT-2026-11.md).
 
 ## Funcionalidades
 
