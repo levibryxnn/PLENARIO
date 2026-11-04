@@ -91,7 +91,7 @@ test('produção autenticada recusa Host forjado e exige origem pública fixa', 
   const originalOrigin = process.env.CIVIS_PUBLIC_ORIGIN;
   const originalPassword = process.env.CIVIS_ADMIN_PASSWORD;
   try {
-    process.env.NODE_ENV = 'production';
+    Reflect.set(process.env, 'NODE_ENV', 'production');
     process.env.CIVIS_ADMIN_PASSWORD = password;
     delete process.env.CIVIS_PUBLIC_ORIGIN;
     assert.equal(
@@ -129,8 +129,8 @@ test('produção autenticada recusa Host forjado e exige origem pública fixa', 
       false,
     );
   } finally {
-    if (originalEnv === undefined) delete process.env.NODE_ENV;
-    else process.env.NODE_ENV = originalEnv;
+    if (originalEnv === undefined) Reflect.deleteProperty(process.env, 'NODE_ENV');
+    else Reflect.set(process.env, 'NODE_ENV', originalEnv);
     if (originalOrigin === undefined) delete process.env.CIVIS_PUBLIC_ORIGIN;
     else process.env.CIVIS_PUBLIC_ORIGIN = originalOrigin;
     if (originalPassword === undefined) delete process.env.CIVIS_ADMIN_PASSWORD;
