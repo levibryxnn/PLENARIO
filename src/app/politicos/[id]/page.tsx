@@ -3,6 +3,7 @@ import { Profile } from '@/components/Profile';
 import { getPolitician } from '@/lib/db';
 import { withEditorial } from '@/lib/editorial';
 import { parsePoliticianId } from '@/lib/ids';
+export const dynamic = 'force-dynamic';
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }) {
   const id = parsePoliticianId((await params).id);
   const p = id ? getPolitician(id) : null;

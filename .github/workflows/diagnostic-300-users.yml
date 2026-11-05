@@ -1,0 +1,51 @@
+name: Diagnostic 300-user load test
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  isolated-load:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+      CIVIS_DB_PATH: /tmp/plenario-load-300.db
+      PLENARIO_LOAD_URL: http://127.0.0.1:3200
+      PLENARIO_LOAD_USERS: '300'
+      PLENARIO_LOAD_SECONDS: '20'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+      - name: Install locked dependencies
+        run: npm ci --no-fund
+      - name: Initialize separate public-data database
+        run: npm run db:init
+      - name: Build production server
+        run: npm run build
+      - name: Run local 300-virtual-user diagnostic
+        run: |
+          npm run start -- --port 3200 > /tmp/plenario-load-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          healthy=0
+          for i in $(seq 1 60); do
+            if curl -fsS http://127.0.0.1:3200/api/health > /dev/null; then
+              healthy=1
+              break
+            fi
+            sleep 1
+          done
+          if [ "$healthy" -ne 1 ]; then
+            cat /tmp/plenario-load-server.log
+            exit 1
+          fi
+          npm run test:load
+      - name: Preserve server log
+        if: always()
+        run: tail -n 100 /tmp/plenario-load-server.log || true

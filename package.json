@@ -14,6 +14,7 @@
     "typecheck": "tsc --noEmit",
     "test": "tsx --test tests/*.test.ts",
     "test:e2e": "playwright test",
+    "test:load": "node scripts/load-test.mjs",
     "db:init": "tsx scripts/init.ts",
     "data:import": "tsx scripts/import.ts",
     "format": "prettier --write .",

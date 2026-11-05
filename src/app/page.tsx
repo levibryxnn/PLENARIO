@@ -1,5 +1,6 @@
 import { Selector } from '@/components/Selector';
 import { listAllPoliticianSummaries, getDataStatus } from '@/lib/db';
+export const dynamic = 'force-dynamic';
 export default function Home() {
   const politicians = listAllPoliticianSummaries();
   return (

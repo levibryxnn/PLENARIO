@@ -207,6 +207,27 @@ export default function Profile({ politician: p }: { politician: Politician }) {
                 administrativos têm natureza própria.
               </p>
             </div>
+            <p className="legal-external-lookup">
+              Para pesquisar processos, use também as fontes externas. Uma busca por nome não
+              confirma que o resultado pertence a este político. Apenas registros documentados e
+              revisados são publicados nesta ficha.{' '}
+              <a
+                href="https://www.jusbrasil.com.br/consulta-processual/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Pesquisar no Jusbrasil
+                <ArrowUpRight size={14} aria-hidden="true" />
+              </a>{' '}
+              <a
+                href="https://www.cnj.jus.br/sistemas/datajud/api-publica/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Conhecer o DataJud/CNJ
+                <ArrowUpRight size={14} aria-hidden="true" />
+              </a>
+            </p>
             {p.legalRecords.length ? (
               <div className="legal-list">
                 {p.legalRecords.map((record) => (
