@@ -1,4 +1,5 @@
 import { CorrectionForm } from '@/components/CorrectionForm';
+export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Solicitar correção' };
 export default async function Corrections({
   searchParams,
