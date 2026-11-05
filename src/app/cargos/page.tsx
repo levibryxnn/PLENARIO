@@ -385,7 +385,9 @@ export default function CargosPage() {
                 Voltar ao mapa <ArrowUpRight size={13} aria-hidden="true" />
               </a>
             </div>
-            <div className={`office-grid ${sectionOffices.length === 5 ? 'office-grid--five' : ''}`}>
+            <div
+              className={`office-grid ${sectionOffices.length === 5 ? 'office-grid--five' : ''}`}
+            >
               {sectionOffices.map((office) => (
                 <OfficeCard key={office.name} office={office} index={offices.indexOf(office)} />
               ))}

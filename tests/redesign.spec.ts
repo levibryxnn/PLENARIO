@@ -129,9 +129,7 @@ test('Cargos respeita largura e grade legível no celular', async ({ page }) => 
   }
 });
 
-test('Marcador de versão identifica quando o Codespace está desatualizado', async ({
-  request,
-}) => {
+test('Marcador de versão identifica quando o Codespace está desatualizado', async ({ request }) => {
   const r = await request.get('/plenario-v3-integridade.txt');
   expect(r.status()).toBe(200);
   expect(await r.text()).toContain('PLENARIO_LAYOUT_V3_2026-11-05');
