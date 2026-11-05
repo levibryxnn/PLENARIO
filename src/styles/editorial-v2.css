@@ -72,6 +72,19 @@
   font-size: 11px;
 }
 
+.header-search-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  min-height: 44px;
+  color: var(--text);
+}
+
+.header-search-link:hover {
+  color: var(--accent);
+}
+
 .mobile-menu-sheet {
   border-radius: 12px;
   background: var(--surface);
@@ -649,6 +662,10 @@ textarea {
 @media (max-width: 700px) {
   .site-header {
     padding-inline: 17px;
+  }
+
+  .header-search-link {
+    display: none;
   }
 
   .page,
