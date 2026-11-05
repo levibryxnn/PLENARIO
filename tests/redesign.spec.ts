@@ -6,12 +6,14 @@ test('Projetos é expansível na mesma página e permite vários itens abertos',
   await expect(page).toHaveTitle('Projetos e votações · PLENÁRIO');
   await expect(page.getByRole('heading', { name: 'Projetos e votações' })).toBeVisible();
 
+  await page.screenshot({ path: 'test-results/projetos-desktop.png', fullPage: true });
   const records = page.locator('.legislative-record');
   await expect(records).toHaveCount(4);
   const first = records.nth(0);
   const last = records.nth(3);
   await first.locator('summary').click();
   await expect(first).toHaveAttribute('open', '');
+  await page.screenshot({ path: 'test-results/projetos-expandido.png', fullPage: true });
   await expect(first).toContainText('Exemplo prático:');
   await last.locator('summary').click();
   await expect(last).toHaveAttribute('open', '');
@@ -35,6 +37,7 @@ test('Glossário mostra as definições oficiais e permite retornar a Projetos',
   await page.goto('/glossario');
   await expect(page).toHaveTitle('Glossário · PLENÁRIO');
   await expect(page.locator('.editorial-definition')).toHaveCount(10);
+  await page.screenshot({ path: 'test-results/glossario-desktop.png', fullPage: true });
   await expect(
     page.getByRole('heading', { name: 'PLP · Projeto de Lei Complementar' }),
   ).toBeVisible();
