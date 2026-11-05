@@ -65,7 +65,6 @@ O script simula até 300 usuários virtuais GET em paralelo e reporta RPS, erros
 
 **Nenhuma garantia de 300 usuários pode ser declarada antes de teste na hospedagem real**. O backend usa SQLite local e limitador de tráfego em memória por instância. Para produção, conferir número de processos Node, CPU/RAM, persistência, proteção compartilhada, observabilidade e backups; usar p95 e erro sob carga como critérios de aceitação definidos para o ambiente.
 
-
 ## Evidências medidas no GitHub Actions — 05/11/2026
 
 A execução Quality do pull request #4 no commit `c41b49ab` passou por formatação, TypeScript, testes de unidade, auditoria de dependências, build e **21 testes Playwright aprovados**, incluindo novas páginas, 320/390/768/1280 px e navegação móvel:
