@@ -13,6 +13,7 @@ test('Projetos é expansível na mesma página e permite vários itens abertos',
   const last = records.nth(3);
   await first.locator('summary').click();
   await expect(first).toHaveAttribute('open', '');
+  await expect(page).toHaveURL(/\/projetos$/);
   await page.screenshot({ path: 'test-results/projetos-expandido.png', fullPage: true });
   await expect(first).toContainText('Exemplo prático:');
   await last.locator('summary').click();
@@ -20,6 +21,8 @@ test('Projetos é expansível na mesma página e permite vários itens abertos',
   await expect(first).toHaveAttribute('open', '');
   await first.locator('summary').click();
   await expect(first).not.toHaveAttribute('open');
+  await expect(page).toHaveURL(/\/projetos$/);
+  await expect(page.getByRole('link', { name: 'Abrir glossário' })).toHaveCount(0);
 
   const sources = page.locator('.legislative-record__body a');
   await expect(sources).toHaveCount(4);
@@ -92,4 +95,44 @@ test('perfil mantém seção jurídica revisada e aponta fontes externas de cons
     'href',
     'https://www.jusbrasil.com.br/consulta-processual/',
   );
+});
+
+test('Cargos preenche as linhas sem cartões isolados no desktop', async ({ page }) => {
+  await page.setViewportSize({ width: 1280, height: 900 });
+  await page.goto('/cargos');
+
+  for (const [sectionId, expectedRows] of [
+    ['municipio', [2, 2]],
+    ['estado', [2, 2]],
+    ['brasil', [3, 2]],
+  ] as const) {
+    const section = page.locator(`section#${sectionId}`);
+    const cards = section.locator('.office-card');
+    await expect(cards).toHaveCount(expectedRows.reduce((n, row) => n + row, 0));
+    const actualRows = await cards.evaluateAll((elements) => {
+      const positions = elements.map((el) => Math.round(el.getBoundingClientRect().top));
+      return [...new Set(positions)].map((top) => positions.filter((y) => y === top).length);
+    });
+    expect(actualRows, `Grade com espaço morto na seção ${sectionId}`).toEqual(expectedRows);
+  }
+});
+
+test('Cargos respeita largura e grade legível no celular', async ({ page }) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto('/cargos');
+  for (const group of ['municipio', 'estado', 'brasil']) {
+    const cards = page.locator(`section#${group} .office-card`);
+    const xs = await cards.evaluateAll((elements) =>
+      elements.map((el) => Math.round(el.getBoundingClientRect().left)),
+    );
+    expect(new Set(xs).size).toBe(1);
+  }
+});
+
+test('Marcador de versão identifica quando o Codespace está desatualizado', async ({
+  request,
+}) => {
+  const r = await request.get('/plenario-v3-integridade.txt');
+  expect(r.status()).toBe(200);
+  expect(await r.text()).toContain('PLENARIO_LAYOUT_V3_2026-11-05');
 });
