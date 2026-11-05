@@ -35,7 +35,9 @@ test('Glossário mostra as definições oficiais e permite retornar a Projetos',
   await page.goto('/glossario');
   await expect(page).toHaveTitle('Glossário · PLENÁRIO');
   await expect(page.locator('.editorial-definition')).toHaveCount(10);
-  await expect(page.getByRole('heading', { name: 'PLP · Projeto de Lei Complementar' })).toBeVisible();
+  await expect(
+    page.getByRole('heading', { name: 'PLP · Projeto de Lei Complementar' }),
+  ).toBeVisible();
   await expect(page.locator('.editorial-definition a')).toHaveCount(10);
   await page.getByRole('link', { name: 'Projetos e votações' }).click();
   await expect(page).toHaveURL(/\/projetos$/);

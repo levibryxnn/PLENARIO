@@ -33,6 +33,7 @@ https://datajud-wiki.cnj.jus.br/api-publica/endpoints/
 O DataJud utiliza chave **pública rotativa** fornecida pelo CNJ e requisições por tribunal. Não é base para classificar culpa, extrair teor integral de decisões, consultar toda a Justiça numa única chamada, nem identificar inequivocamente uma pessoa por nome.
 
 Proposta de integração futura, condicionada a revisão jurídica/LGPD e termos de uso:
+
 1. Consultar somente números CNJ obtidos de fontes oficiais e vinculados à pessoa após checagem individual.
 2. Validar formato e dígito verificador, permitir apenas tribunais oficiais (sem URL arbitrária), limitar requisições e aplicar timeout/cache.
 3. Tratar DataJud/Jusbrasil como **fontes de pesquisa para editor**, jamais publicação automática.
@@ -46,6 +47,7 @@ Por essas razões, esta rodada **não faz consultas automáticas por nome, não 
 Scripts existentes: `npm run format:check`, `npm run typecheck`, `npm test`, `npm run build`, `npm run test:e2e`, `npm audit --audit-level=high`.
 
 O teste `tests/redesign.spec.ts` acrescenta cobertura para:
+
 - abertura simultânea e fechamento de itens em Projetos;
 - conteúdo, fontes e navegação do Glossário;
 - transbordamento horizontal em 320/390/768/1280px;

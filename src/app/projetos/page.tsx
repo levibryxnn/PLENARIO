@@ -59,9 +59,9 @@ export default function ProjetosPage() {
       <aside className="editorial-bottom-note" aria-label="Limites da cobertura">
         <h2>Proposta apresentada não é lei aprovada.</h2>
         <p>
-          O PLENÁRIO exibe propostas importadas nos perfis em que há fonte disponível. Votos nominais
-          e o andamento completo de todas as proposições ainda não fazem parte da cobertura. Não
-          interpretamos uma lacuna como ausência de atividade.
+          O PLENÁRIO exibe propostas importadas nos perfis em que há fonte disponível. Votos
+          nominais e o andamento completo de todas as proposições ainda não fazem parte da
+          cobertura. Não interpretamos uma lacuna como ausência de atividade.
         </p>
         <div className="editorial-note-links">
           <Link href="/#explorar">Explorar políticos</Link>

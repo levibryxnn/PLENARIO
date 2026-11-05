@@ -76,7 +76,11 @@ await Promise.all(Array.from({ length: users }, (_, index) => worker(index)));
 latencies.sort((a, b) => a - b);
 const percentile = (fraction) =>
   latencies.length
-    ? Number(latencies[Math.min(latencies.length - 1, Math.ceil(fraction * latencies.length) - 1)].toFixed(1))
+    ? Number(
+        latencies[
+          Math.min(latencies.length - 1, Math.ceil(fraction * latencies.length) - 1)
+        ].toFixed(1),
+      )
     : null;
 const elapsedSeconds = (performance.now() - started) / 1000;
 const total = successes + failures;

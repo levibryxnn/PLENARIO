@@ -82,8 +82,8 @@ export default function GlossarioPage() {
       </section>
 
       <p className="editorial-glossary-footer">
-        As definições são explicações resumidas. Para acompanhar uma proposta específica,
-        consulte também a documentação original no Congresso ou a página de{' '}
+        As definições são explicações resumidas. Para acompanhar uma proposta específica, consulte
+        também a documentação original no Congresso ou a página de{' '}
         <Link href="/projetos">Projetos e votações</Link>.
       </p>
     </main>

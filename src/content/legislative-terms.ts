@@ -20,8 +20,7 @@ export const legislativeTerms = [
     short: 'Proposta para criar ou alterar uma lei.',
     explanation:
       'É uma proposta legislativa que pode resultar em lei ordinária. Sua apresentação não significa aprovação: é necessário percorrer as etapas de análise e votação aplicáveis.',
-    example:
-      'Um PL pode estabelecer uma regra nacional sobre uma matéria de competência da União.',
+    example: 'Um PL pode estabelecer uma regra nacional sobre uma matéria de competência da União.',
     sourceUrl: 'https://www.camara.leg.br/entenda-o-processo-legislativo/',
     sourceLabel: 'Câmara dos Deputados · Processo legislativo',
   },
