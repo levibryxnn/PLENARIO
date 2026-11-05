@@ -1,7 +1,10 @@
 import type { Metadata } from 'next';
+import { Inter, Manrope } from 'next/font/google';
 import { Header } from '@/components/Header';
 import 'open-props/easings.min.css';
 import './globals.css';
+const inter = Inter({ subsets: ['latin'], display: 'swap', variable: '--pl-inter' });
+const manrope = Manrope({ subsets: ['latin'], display: 'swap', variable: '--pl-manrope' });
 export const metadata: Metadata = {
   icons: { icon: { url: '/favicon.png', type: 'image/png', sizes: '64x64' } },
   title: { default: 'PLENÁRIO — Informação pública, escolha sua', template: '%s · PLENÁRIO' },
@@ -12,7 +15,7 @@ export const dynamic = 'force-dynamic';
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR">
-      <body>
+      <body className={inter.variable + ' ' + manrope.variable}>
         <a className="skip-link" href="#conteudo">
           Pular para o conteúdo
         </a>
