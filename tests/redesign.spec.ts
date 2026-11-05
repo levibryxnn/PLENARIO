@@ -109,11 +109,21 @@ test('Cargos preenche as linhas sem cartões isolados no desktop', async ({ page
     const section = page.locator(`section#${sectionId}`);
     const cards = section.locator('.office-card');
     await expect(cards).toHaveCount(expectedRows.reduce((n, row) => n + row, 0));
-    const actualRows = await cards.evaluateAll((elements) => {
-      const positions = elements.map((el) => Math.round(el.getBoundingClientRect().top));
-      return [...new Set(positions)].map((top) => positions.filter((y) => y === top).length);
-    });
-    expect(actualRows, `Grade com espaço morto na seção ${sectionId}`).toEqual(expectedRows);
+    await expect(cards.first()).toBeVisible();
+    await expect
+      .poll(
+        async () =>
+          cards.evaluateAll((elements) => {
+            const rectangles = elements.map((el) => el.getBoundingClientRect());
+            if (rectangles.some((rect) => rect.width < 100 || rect.height < 60)) return [];
+            const positions = rectangles.map((rect) => Math.round(rect.top));
+            return [...new Set(positions)].map(
+              (top) => positions.filter((position) => position === top).length,
+            );
+          }),
+        { message: `Grade com espaço morto na seção ${sectionId}`, timeout: 10000 },
+      )
+      .toEqual(expectedRows);
   }
 });
 
