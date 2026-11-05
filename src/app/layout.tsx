@@ -11,7 +11,6 @@ export const metadata: Metadata = {
   description:
     'Explore trajetórias políticas a partir de fontes oficiais. Sem rankings de honestidade, com proveniência e limites visíveis.',
 };
-export const dynamic = 'force-dynamic';
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR">
