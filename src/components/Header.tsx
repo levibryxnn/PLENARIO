@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import * as Dialog from '@radix-ui/react-dialog';
-import { ArrowUpRight, Menu, Waves, X } from 'lucide-react';
+import { ArrowUpRight, Menu, Search, Waves, X } from 'lucide-react';
 
 const mobileLinks = [
   { href: '/', label: 'Início' },
@@ -142,6 +142,9 @@ export default function Header() {
           </Dialog.Portal>
         </Dialog.Root>
         <div className="header-actions">
+          <Link className="header-search-link" href="/#explorar" aria-label="Pesquisar políticos">
+            <Search size={20} aria-hidden="true" />
+          </Link>
           <button
             type="button"
             className="motion-toggle"
