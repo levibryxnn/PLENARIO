@@ -30,7 +30,7 @@ export default function ProjetosPage() {
 
       <section className="legislative-records" aria-label="Tipos de proposição">
         {legislativeTerms.map((term, index) => {
-          const Icon = icons[index];
+          const Icon = icons[index] ?? FileText;
           return (
             <details className="legislative-record" key={term.id}>
               <summary className="legislative-record__summary">
