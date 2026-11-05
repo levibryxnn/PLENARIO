@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Compare } from '@/components/Compare';
 import { getPolitician } from '@/lib/db';
 import { withEditorial } from '@/lib/editorial';
+export const dynamic = 'force-dynamic';
 export const metadata = { title: 'Comparar trajetórias' };
 export default async function ComparePage({
   searchParams,
