@@ -64,3 +64,20 @@ Com servidor de **staging autorizado**, volume SQLite persistente e banco de tes
 O script simula até 300 usuários virtuais GET em paralelo e reporta RPS, erros, timeouts e latências p50/p95/p99 por conjunto de rotas. Por segurança, proíbe destinos remotos sem `PLENARIO_ALLOW_REMOTE_LOAD=CONFIRMO`. Não testa comportamento visual, escritas concorrentes, picos prolongados, redes móveis ou CDN.
 
 **Nenhuma garantia de 300 usuários pode ser declarada antes de teste na hospedagem real**. O backend usa SQLite local e limitador de tráfego em memória por instância. Para produção, conferir número de processos Node, CPU/RAM, persistência, proteção compartilhada, observabilidade e backups; usar p95 e erro sob carga como critérios de aceitação definidos para o ambiente.
+
+
+## Evidências medidas no GitHub Actions — 05/11/2026
+
+A execução Quality do pull request #4 no commit `c41b49ab` passou por formatação, TypeScript, testes de unidade, auditoria de dependências, build e **21 testes Playwright aprovados**, incluindo novas páginas, 320/390/768/1280 px e navegação móvel:
+https://github.com/levibryxnn/PLENARIO/actions/runs/42065028359
+
+Em CI isolada (único servidor Next.js no runner GitHub, banco SQLite próprio, 300 clientes virtuais simultâneos gerando GET de seis rotas, 20 segundos de janela), ocorreram:
+
+- **Primeira rodada**: 939 requisições, 858 sucessos, 81 timeouts (**8,63% erros**), p50 = 5.863 ms, p95 = 10.538 ms, vazão 40,44 req/s. Não aprovado.
+  https://github.com/levibryxnn/PLENARIO/actions/runs/42065021145
+- **Segunda rodada após deixar Cargos, Projetos, Glossário e Metodologia estáticos, com demais rotas dinâmicas**: 1.336 requisições, 992 sucessos, 344 falhas (**25,75% erros**, das quais 340 timeouts), p50 = 1.994 ms, p95 = 8.839 ms, vazão 47,82 req/s. Também não aprovado.
+  https://github.com/levibryxnn/PLENARIO/actions/runs/42065624110
+
+A segunda rodada melhorou p50 e vazão, mas elevou a taxa de erro; não se afirma melhoria global nem suporte sustentado a 300 simultâneos. Resultados variam com CPU do runner, comportamento do gerador e conjunto de páginas. A CLI mede somente solicitações HTTP; não equivale a 300 navegadores, 300 IPs distintos ou garantia em produção.
+
+**Conclusão operacional:** antes da publicação para 300 usuários simultâneos, selecionar hospedagem e testar nela, dimensionar instâncias, aproveitar cache/CDN, avaliar SQLite sob leitura/escrita concorrente, implementar métricas e limites de tráfego externos, repetir carga em rampas e verificar 0 erros e orçamento de latência definido. O job de carga fica apenas em `workflow_dispatch` para evitar testes de estresse involuntários a cada commit.
