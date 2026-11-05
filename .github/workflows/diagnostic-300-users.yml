@@ -1,9 +1,6 @@
 name: Diagnostic 300-user load test
 
 on:
-  push:
-    branches:
-      - feat/editorial-ui-projetos-glossario-2026-11-05
   workflow_dispatch:
 
 permissions:
