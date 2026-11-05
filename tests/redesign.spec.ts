@@ -48,7 +48,7 @@ for (const width of [320, 390, 768, 1280]) {
     await page.setViewportSize({ width, height: 840 });
     for (const path of ['/', '/cargos', '/projetos', '/glossario', '/comparar', '/metodologia']) {
       await page.goto(path);
-      await expect(page.locator('main')).toBeVisible();
+      await expect(page.locator('main#conteudo').last()).toBeVisible();
       const sizes = await page.evaluate(() => ({
         actual: document.documentElement.scrollWidth,
         viewport: window.innerWidth,
