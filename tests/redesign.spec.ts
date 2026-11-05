@@ -83,16 +83,10 @@ test('perfil mantém seção jurídica revisada e aponta fontes externas de cons
   page,
 }) => {
   await page.goto('/');
-  const firstProfile = page.locator('.character-select').first();
-  await expect(firstProfile).toBeVisible();
-  await firstProfile.click();
-  const profileLink = page.getByRole('link', { name: /ver perfil|abrir ficha/i }).first();
-  if ((await profileLink.count()) > 0) {
-    await profileLink.click();
-    await expect(page.locator('#processos')).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Pesquisar no Jusbrasil' })).toHaveAttribute(
-      'href',
-      'https://www.jusbrasil.com.br/consulta-processual/',
-    );
-  }
+  await page.getByRole('link', { name: 'Explorar perfil' }).click();
+  await expect(page.locator('#processos')).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Pesquisar no Jusbrasil' })).toHaveAttribute(
+    'href',
+    'https://www.jusbrasil.com.br/consulta-processual/',
+  );
 });
