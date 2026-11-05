@@ -1,0 +1,681 @@
+/*
+ * PLENÁRIO · Editorial UI v2
+ *
+ * Overrides existing surface classes instead of replacing working components.
+ * Imported last from globals.css. No changes to editorial status semantics.
+ */
+
+.site-header {
+  top: 0;
+  width: min(100%, 1400px);
+  min-height: 70px;
+  margin: 0 auto;
+  padding: 8px 32px;
+  gap: 18px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  border-radius: 0;
+  background: var(--bg);
+  box-shadow: none;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+.site-header .brand {
+  width: 168px;
+  gap: 0;
+}
+
+.site-header .brand-subtitle {
+  display: none;
+}
+
+.site-header > nav {
+  gap: clamp(2px, 0.9vw, 14px);
+}
+
+.site-header > nav a {
+  position: relative;
+  min-height: 48px;
+  padding: 9px 8px;
+  border-radius: 0;
+  background: transparent;
+  color: var(--text);
+  font-size: 13px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.site-header > nav a:hover,
+.site-header > nav a[aria-current='page'],
+.site-header > nav a[aria-current='location'] {
+  background: transparent;
+  color: var(--text);
+}
+
+.site-header > nav a[aria-current='page'] {
+  font-weight: 700;
+}
+
+.site-header > nav a[aria-current='page']::after {
+  content: '';
+  position: absolute;
+  left: 7px;
+  right: 7px;
+  bottom: 0;
+  height: 3px;
+  border-radius: 4px;
+  background: var(--navigation-active);
+}
+
+.site-header .admin-link {
+  font-size: 11px;
+}
+
+.mobile-menu-sheet {
+  border-radius: 12px;
+  background: var(--surface);
+}
+
+.mobile-menu-links a {
+  font: 700 19px/1.35 var(--font-display);
+  letter-spacing: -0.025em;
+}
+
+.mobile-menu-links a[aria-current='page'] {
+  color: var(--accent);
+  background: var(--surface-alt);
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  line-height: 1.6;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--font-display);
+  letter-spacing: -0.035em;
+}
+
+h1 {
+  font-size: clamp(36px, 4.2vw, 58px);
+  font-weight: 800;
+  letter-spacing: -0.055em;
+}
+
+h2 {
+  font-size: clamp(26px, 3vw, 38px);
+  font-weight: 750;
+}
+
+h3 {
+  font-weight: 700;
+}
+
+.page,
+.selector-page {
+  width: min(100%, 1400px);
+  padding-inline: 48px;
+}
+
+.page {
+  padding-top: 30px;
+  padding-bottom: 56px;
+}
+
+.panel,
+.character-card,
+.office-card,
+.level-card,
+.proposal,
+.legal-record,
+.missing-card,
+.missing-grid > *,
+.filter-panel {
+  border-color: var(--line);
+  border-radius: 10px;
+  box-shadow: none;
+}
+
+.button,
+.tag,
+input,
+select,
+textarea {
+  border-radius: 8px;
+}
+
+.button.primary,
+.role-tabs button.is-active {
+  background: var(--navy-deep);
+  border-color: var(--navy-deep);
+}
+
+.eyebrow {
+  color: var(--accent);
+  letter-spacing: 0.065em;
+}
+
+.explore-intro {
+  grid-template-columns: minmax(0, 1.15fr) minmax(280px, 0.85fr);
+  gap: 24px;
+  padding: 32px 0 28px;
+}
+
+.explore-intro h1 {
+  max-width: 760px;
+  font-size: clamp(37px, 4.3vw, 60px);
+  font-weight: 800;
+}
+
+.explore-intro h1 span {
+  color: var(--accent);
+}
+
+.explore-intro p {
+  font-size: 16px;
+}
+
+.intro-aside {
+  min-height: 250px;
+  padding: 105px 18px 16px 25px;
+  border: 0;
+  background: transparent;
+}
+
+.intro-aside::before {
+  left: 0;
+  height: 116px;
+  background-size: auto 110px;
+}
+
+.intro-aside p {
+  font: 700 21px/1.3 var(--font-display);
+}
+
+.explorer {
+  padding-top: 23px;
+}
+
+.filter-panel {
+  border-radius: 10px;
+  box-shadow: none;
+  background: var(--surface);
+}
+
+.search-field {
+  min-height: 62px;
+  border-radius: 10px 0 0 10px;
+  padding: 8px 16px;
+}
+
+.filter-fields label {
+  border-radius: 7px;
+  background: var(--surface-alt);
+}
+
+.role-tabs button {
+  border-radius: 8px;
+  background: var(--surface);
+}
+
+.character-card {
+  overflow: hidden;
+}
+
+.character-card:hover {
+  box-shadow: none;
+  border-color: #a89775;
+}
+
+.selected-panel {
+  border-radius: 10px;
+}
+
+.selected-content h2 {
+  font-weight: 750;
+}
+
+.civic-guide {
+  padding-top: 28px;
+}
+
+.guide-hero {
+  grid-template-columns: minmax(0, 1.6fr) minmax(220px, 0.55fr);
+  gap: 28px;
+  padding: 12px 0 26px;
+}
+
+.guide-hero .eyebrow {
+  margin-bottom: 12px;
+}
+
+.guide-hero h1 em {
+  font-style: normal;
+  font-weight: 800;
+  color: var(--accent);
+}
+
+.guide-lead {
+  font-size: 16px;
+}
+
+.guide-map {
+  padding-top: 28px;
+}
+
+.level-card,
+.office-card {
+  background: var(--surface);
+  padding: 21px;
+}
+
+.level-card:hover {
+  background: var(--surface);
+  border-color: #a89775;
+}
+
+.level-card h3,
+.office-card h3 {
+  font: 750 22px/1.25 var(--font-display);
+}
+
+.level-card h3 {
+  margin-top: 18px;
+}
+
+.office-card h3 {
+  margin: 14px 0 8px;
+}
+
+.office-workplace {
+  margin-bottom: 12px;
+}
+
+.office-explainer {
+  gap: 12px;
+}
+
+.office-explainer > div {
+  padding-top: 10px;
+}
+
+.office-explainer p {
+  font-size: 14px;
+}
+
+.office-limit {
+  margin: 14px 0 10px;
+}
+
+.guide-vocab {
+  background: var(--surface-alt);
+  border-color: var(--line);
+  border-radius: 10px;
+}
+
+.guide-where-to-go {
+  border-radius: 10px;
+}
+
+.profile-hero {
+  padding-bottom: 24px;
+  gap: 30px;
+}
+
+.profile-heading h1 {
+  font-weight: 800;
+}
+
+.profile-section {
+  padding: 28px 0;
+}
+
+.profile-sections {
+  gap: 14px 24px;
+}
+
+.profile-sections a {
+  text-decoration-color: var(--line);
+  text-underline-offset: 6px;
+}
+
+.section-heading h2 {
+  font-weight: 750;
+  font-size: clamp(23px, 2.5vw, 30px);
+}
+
+.profile-columns {
+  gap: 30px;
+}
+
+.site-footer {
+  padding-top: 26px;
+  padding-bottom: 28px;
+}
+
+.site-footer a {
+  text-decoration-color: var(--line);
+}
+
+/* New educational routes: shared editorial layout */
+
+.editorial-page {
+  max-width: 1400px;
+}
+
+.editorial-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+  color: var(--muted);
+  font-size: 12px;
+}
+
+.editorial-breadcrumb a:hover {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.editorial-heading {
+  margin-bottom: 26px;
+}
+
+.editorial-heading h1 {
+  margin: 0 0 9px;
+  font-size: clamp(35px, 4.1vw, 54px);
+}
+
+.editorial-heading p {
+  margin: 0;
+  max-width: 76ch;
+  font-size: 16px;
+  line-height: 1.7;
+}
+
+.legislative-records {
+  display: grid;
+  gap: 8px;
+}
+
+.legislative-record {
+  min-width: 0;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: var(--surface);
+}
+
+.legislative-record[open] {
+  border-color: #bda77d;
+}
+
+.legislative-record__summary {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 500px) minmax(0, 1fr) 20px;
+  gap: 18px;
+  align-items: center;
+  min-height: 77px;
+  padding: 11px 20px;
+  cursor: pointer;
+  list-style: none;
+}
+
+.legislative-record__summary::-webkit-details-marker {
+  display: none;
+}
+
+.legislative-record__summary::marker {
+  content: '';
+}
+
+.legislative-record__summary > * {
+  min-width: 0;
+}
+
+.legislative-record__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  align-self: stretch;
+  border-right: 1px solid var(--line);
+  color: var(--gold);
+}
+
+.legislative-record__title {
+  font: 750 14px/1.4 var(--font-display);
+  letter-spacing: -0.025em;
+}
+
+.legislative-record__short {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.legislative-record__arrow {
+  justify-self: end;
+  transition: transform 160ms ease;
+}
+
+.legislative-record[open] .legislative-record__arrow {
+  transform: rotate(180deg);
+}
+
+.legislative-record__body {
+  padding: 17px 24px 20px 94px;
+  border-top: 1px solid var(--line);
+}
+
+.legislative-record__body p {
+  max-width: 88ch;
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.legislative-record__body a,
+.editorial-definition a,
+.editorial-note-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 36px;
+  color: var(--accent);
+  font-size: 13px;
+  font-weight: 650;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.editorial-bottom-note {
+  margin-top: 28px;
+  padding: 22px 25px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--surface-alt);
+}
+
+.editorial-bottom-note h2 {
+  font-size: 20px;
+  margin: 0 0 8px;
+}
+
+.editorial-bottom-note p {
+  max-width: 88ch;
+  font-size: 14px;
+  margin: 0;
+}
+
+.editorial-note-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+  margin-top: 12px;
+}
+
+.editorial-glossary-list {
+  border-top: 1px solid var(--line);
+}
+
+.editorial-definition {
+  display: grid;
+  grid-template-columns: minmax(190px, 0.43fr) minmax(0, 1fr);
+  gap: 24px;
+  padding: 23px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.editorial-definition h2 {
+  font-size: 19px;
+  margin: 0;
+}
+
+.editorial-definition p {
+  margin-bottom: 6px;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.editorial-glossary-footer {
+  margin-top: 25px;
+  font-size: 14px;
+}
+
+.editorial-glossary-footer a {
+  font-weight: 700;
+  text-decoration: underline;
+  text-decoration-color: var(--gold);
+  text-underline-offset: 4px;
+}
+
+.legislative-record__summary:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: -4px;
+}
+
+/* Preserve existing mobile-sheet functionality and focus handling. */
+@media (max-width: 1120px) {
+  .site-header > nav {
+    display: none;
+  }
+
+  .site-header .mobile-menu-trigger {
+    display: flex;
+    margin-left: auto;
+  }
+
+  .site-header {
+    min-height: 66px;
+  }
+
+  .legislative-record__summary {
+    grid-template-columns: 48px minmax(0, 1fr) 20px;
+    grid-template-areas:
+      'icon title arrow'
+      'icon short arrow';
+    gap: 5px 14px;
+    min-height: 82px;
+  }
+
+  .legislative-record__icon {
+    grid-area: icon;
+  }
+
+  .legislative-record__title {
+    grid-area: title;
+  }
+
+  .legislative-record__short {
+    grid-area: short;
+  }
+
+  .legislative-record__arrow {
+    grid-area: arrow;
+  }
+}
+
+@media (max-width: 850px) {
+  .site-header {
+    top: 0;
+    width: 100%;
+    margin-top: 0;
+    padding-inline: 22px;
+    border-radius: 0;
+  }
+
+  .guide-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .explore-intro {
+    grid-template-columns: 1fr;
+  }
+
+  .intro-aside {
+    min-height: 160px;
+    padding-top: 85px;
+  }
+}
+
+@media (max-width: 700px) {
+  .site-header {
+    padding-inline: 17px;
+  }
+
+  .page,
+  .selector-page {
+    padding-inline: 20px;
+  }
+
+  .page {
+    padding-top: 24px;
+  }
+
+  .editorial-heading p {
+    font-size: 15px;
+  }
+
+  .legislative-record__summary {
+    padding: 12px 13px;
+  }
+
+  .legislative-record__title {
+    font-size: 13px;
+  }
+
+  .legislative-record__short {
+    font-size: 12px;
+  }
+
+  .legislative-record__body {
+    padding: 14px 17px 20px;
+  }
+
+  .editorial-definition {
+    grid-template-columns: 1fr;
+    gap: 4px;
+    padding: 18px 0;
+  }
+
+  .editorial-bottom-note {
+    padding: 18px;
+  }
+
+  .guide-hero h1 {
+    font-size: clamp(34px, 9vw, 48px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .legislative-record__arrow {
+    transition: none;
+  }
+}
