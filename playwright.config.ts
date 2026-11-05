@@ -8,7 +8,7 @@ process.env.CIVIS_E2E_DB ??= join(mkdtempSync(join(tmpdir(), 'civis-e2e-')), 'ci
 const baseURL = 'http://127.0.0.1:3100';
 export default defineConfig({
   testDir: './tests',
-  testMatch: 'e2e.spec.ts',
+  testMatch: ['e2e.spec.ts', 'redesign.spec.ts'],
   fullyParallel: false,
   workers: 1,
   timeout: 60000,
