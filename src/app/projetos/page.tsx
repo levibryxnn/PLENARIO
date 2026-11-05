@@ -65,7 +65,6 @@ export default function ProjetosPage() {
         </p>
         <div className="editorial-note-links">
           <Link href="/#explorar">Explorar políticos</Link>
-          <Link href="/glossario">Abrir glossário</Link>
           <a
             href="https://www.camara.leg.br/busca-portal/proposicoes/pesquisa-avancada"
             target="_blank"

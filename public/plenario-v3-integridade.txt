@@ -1,0 +1,4 @@
+PLENARIO_LAYOUT_V3_2026-11-05
+Projetos: expansao nativa na pagina.
+Cargos: grades equilibradas em desktop, tablet e mobile.
+Se o URL /plenario-v3-integridade.txt responder 404, o servidor nao esta usando este codigo.
