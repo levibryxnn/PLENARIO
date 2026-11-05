@@ -363,6 +363,27 @@ textarea {
   text-decoration-color: var(--line);
 }
 
+.legal-external-lookup {
+  margin-top: 15px;
+  margin-bottom: 15px;
+  padding: 14px 16px;
+  background: var(--surface-alt);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.legal-external-lookup a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: var(--accent);
+  font-weight: 700;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
 /* New educational routes: shared editorial layout */
 
 .editorial-page {
